@@ -1,0 +1,217 @@
+{  
+   "total":20,
+   "reviews":[  
+      {  
+         "critic":"Wanda Hale",
+         "date":"2015-02-22",
+         "original_score":"4/4",
+         "freshness":"fresh",
+         "publication":"New York Daily News",
+         "quote":"Brando is the strong magnet that will draw fans to The Godfather. But behind-the-scenes creativity is of equal value to this film of towering proportions.",
+         "links":{  
+            "review":"http://www.nydailynews.com/entertainment/oscars/archives-godfather-fans-brando-old-flame-article-1.2033431?cid=bitly"
+         }
+      },
+      {  
+         "critic":"Stanley Kauffmann",
+         "date":"2015-02-22",
+         "freshness":"rotten",
+         "publication":"The New Republic",
+         "quote":"I don't see how any gifted actor could have done less than Brando does here. His resident power, his sheer innate force, has rarely seemed weaker.",
+         "links":{  
+            "review":"http://www.newrepublic.com/article/film/101783/tnr-film-classics-the-godfather-april-1-1972"
+         }
+      },
+      {  
+         "critic":"Kenneth Turan",
+         "date":"2014-02-26",
+         "freshness":"fresh",
+         "publication":"Los Angeles Times",
+         "quote":"The Godfather is overflowing with life, rich with all the grand emotions and vital juices of existence, up to and including blood.",
+         "links":{  
+            "review":"http://articles.latimes.com/1997-03-16/entertainment/ca-38659_1_godfather-ii"
+         }
+      },
+      {  
+         "critic":"Gene Siskel",
+         "date":"2013-01-18",
+         "original_score":"4/4",
+         "freshness":"fresh",
+         "publication":"Chicago Tribune",
+         "quote":"To permit us a glimpse at The Mob, with all of its ethnic insularity, is like giving a chronic gambler a chance to wander above the false mirrors that overlook every casino.",
+         "links":{  
+            "review":"http://articles.chicagotribune.com/1999-10-15/entertainment/9910200025_1_movie-reviews-star-film"
+         }
+      },
+      {  
+         "critic":"Andrew Sarris",
+         "date":"2012-09-24",
+         "freshness":"fresh",
+         "publication":"Village Voice",
+         "quote":"Brando's triumph and fascination is less that of an actor of parts than of a star galaxy of myths.",
+         "links":{  
+            "review":"http://blogs.villagevoice.com/runninscared/2011/02/the_godfather_a.php"
+         }
+      },
+      {  
+         "critic":"F.X. Feeney",
+         "date":"2011-02-23",
+         "freshness":"fresh",
+         "publication":"L.A. Weekly",
+         "quote":"Traces the arc of this doomed idealism with a beauty that is still fresh.",
+         "links":{  
+            "review":"http://www.laweekly.com/movies"
+         }
+      },
+      {  
+         "critic":"Michael Wilmington",
+         "date":"2011-02-23",
+         "original_score":"4/4",
+         "freshness":"fresh",
+         "publication":"Chicago Tribune",
+         "quote":"Brando made Don Vito something we rarely see in movies: a tragicomic villain-hero, a vulnerable hood.",
+         "links":{  
+            "review":"http://articles.chicagotribune.com/1997-03-21/entertainment/9703210153_1_tom-hagen-connie-corleone-godfather"
+         }
+      },
+      {  
+         "critic":"Jay Cocks",
+         "date":"2011-02-23",
+         "freshness":"fresh",
+         "publication":"TIME Magazine",
+         "quote":"In its blending of new depth with an old genre, it becomes that rarity, a mass entertainment that is also great movie art.",
+         "links":{  
+            "review":"http://www.time.com/time/magazine/article/0,9171,903442,00.html"
+         }
+      },
+      {  
+         "critic":"Ben Walters",
+         "date":"2009-09-25",
+         "freshness":"fresh",
+         "publication":"Time Out",
+         "quote":"As filmmaking and storytelling, 'The Godfather' remains a bravura piece of work, its set pieces, dialogue and performances entrenched cinematic icons.",
+         "links":{  
+
+         }
+      },
+      {  
+         "critic":"Desson Thomson",
+         "date":"2008-01-29",
+         "freshness":"fresh",
+         "publication":"Washington Post",
+         "quote":"There are volumes that could be written -- and have been -- about the movie's uniformly powerful performances; its precedent-setting editing by William Reynolds and Peter Zinner; Nino Rota's haunting score; and Dean Tavoularis's evocative set design.",
+         "links":{  
+            "review":"http://www.washingtonpost.com/wp-srv/style/longterm/movies/videos/godfatherhowe.htm"
+         }
+      },
+      {  
+         "critic":"A.D. Murphy",
+         "date":"2008-01-29",
+         "freshness":"fresh",
+         "publication":"Variety",
+         "quote":"The biggest achievement here is the establishment of mood and time.",
+         "links":{  
+            "review":"http://www.variety.com/review/VE1117933082.html?categoryid=31&cs=1"
+         }
+      },
+      {  
+         "critic":"Dave Kehr",
+         "date":"2006-12-13",
+         "freshness":"fresh",
+         "publication":"Chicago Reader",
+         "quote":"The ultimate family film.",
+         "links":{  
+            "review":"http://www.chicagoreader.com/chicago/the-godfather/Film?oid=4794708"
+         }
+      },
+      {  
+         "critic":"Geoff Andrew",
+         "date":"2006-02-09",
+         "freshness":"fresh",
+         "publication":"Time Out",
+         "quote":"An everyday story of Mafia folk, incorporating a severed horse's head in the bed and a number of heartwarming family occasions, as well as pointers on how not to behave in your local trattoria.",
+         "links":{  
+            "review":"http://www.timeout.com/film/reviews/70298/the_godfather.html"
+         }
+      },
+      {  
+         "critic":"Vincent Canby",
+         "date":"2003-05-20",
+         "freshness":"fresh",
+         "publication":"New York Times",
+         "quote":"Francis Ford Coppola has made one of the most brutal and moving chronicles of American life ever designed within the limits of popular entertainment.",
+         "links":{  
+            "review":"http://movies.nytimes.com/movie/review?res=EE05E7DF1739E464BC4E52DFB5668389669EDE&partner=Rotten Tomatoes"
+         }
+      },
+      {  
+         "critic":"Susan Stark",
+         "date":"2002-01-12",
+         "original_score":"4/4",
+         "freshness":"fresh",
+         "publication":"Detroit News",
+         "quote":"",
+         "links":{  
+
+         }
+      },
+      {  
+         "critic":"James Berardinelli",
+         "date":"2000-01-01",
+         "original_score":"4/4",
+         "freshness":"fresh",
+         "publication":"ReelViews",
+         "quote":"We come to The Godfather like Kay Adams -- outsiders uncertain in our expectations - but it doesn't take long for us to be captivated by this intricate, violent world.",
+         "links":{  
+            "review":"http://www.reelviews.net/php_review_template.php?identifier=262"
+         }
+      },
+      {  
+         "critic":"John Hartl",
+         "date":"2000-01-01",
+         "freshness":"fresh",
+         "publication":"Film.com",
+         "quote":"The years have been kind to this timeless Mafia epic, which seems particularly rich now that studio blockbusters no longer demonstrate this kind of care with character, atmosphere and storytelling.",
+         "links":{  
+
+         }
+      },
+      {  
+         "critic":"Roger Ebert",
+         "date":"2000-01-01",
+         "original_score":"4/4",
+         "freshness":"fresh",
+         "publication":"Chicago Sun-Times",
+         "quote":"The story by Mario Puzo and Francis Ford Coppola is a brilliant conjuring act, inviting us to consider the Mafia entirely on its own terms.",
+         "links":{  
+            "review":"http://www.rogerebert.com/reviews/the-godfather-1972"
+         }
+      },
+      {  
+         "critic":"Mary Brennan",
+         "date":"2000-01-01",
+         "freshness":"fresh",
+         "publication":"Film.com",
+         "quote":"Corleone, the soft-spoken crimelord, is masterfully played by Brando in one of the most imitated performances of all time.",
+         "links":{  
+
+         }
+      },
+      {  
+         "critic":"Edward Guthmann",
+         "date":"2000-01-01",
+         "freshness":"fresh",
+         "publication":"San Francisco Chronicle",
+         "quote":"In scene after scene ... Coppola crafted an enduring, undisputed masterpiece.",
+         "links":{  
+            "review":"http://www.sfgate.com/cgi-bin/article.cgi?f=/c/a/1997/03/21/DD65519.DTL"
+         }
+      }
+   ],
+   "links":{  
+      "self":"http://api.rottentomatoes.com/api/public/v1.0/movies/12911/reviews.json?review_type=top_critic&page_limit=20&country=us&page=1",
+      "alternate":"http://www.rottentomatoes.com/m/godfather/#reviews",
+      "rel":"http://api.rottentomatoes.com/api/public/v1.0/movies/12911.json"
+   },
+   "link_template":"//api.rottentomatoes.com/api/public/v1.0/movies/{movie-id}/reviews.json?review_type={top_critic|all|dvd}&page_limit={results-per-page}&page={page-number}&country={country-code}"
+}

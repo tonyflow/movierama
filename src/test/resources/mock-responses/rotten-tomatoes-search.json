@@ -1,0 +1,79 @@
+{  
+   "total":50,
+   "movies":[  
+      {  
+         "id":"12911",
+         "title":"The Godfather",
+         "year":1972,
+         "mpaa_rating":"R",
+         "runtime":175,
+         "critics_consensus":"",
+         "release_dates":{  
+            "theater":"1972-03-24",
+            "dvd":"2001-10-09"
+         },
+         "ratings":{  
+            "critics_rating":"Certified Fresh",
+            "critics_score":99,
+            "audience_rating":"Upright",
+            "audience_score":98
+         },
+         "synopsis":"",
+         "posters":{  
+            "thumbnail":"https://resizing.flixster.com/Qi2PFmLRuduy0uyfoBbc84MQ5qs=/54x81/v1.bTsxMTE3MTYxMjtqOzE3MTg2OzIwNDg7ODAwOzEyMDA",
+            "profile":"https://resizing.flixster.com/Qi2PFmLRuduy0uyfoBbc84MQ5qs=/54x81/v1.bTsxMTE3MTYxMjtqOzE3MTg2OzIwNDg7ODAwOzEyMDA",
+            "detailed":"https://resizing.flixster.com/Qi2PFmLRuduy0uyfoBbc84MQ5qs=/54x81/v1.bTsxMTE3MTYxMjtqOzE3MTg2OzIwNDg7ODAwOzEyMDA",
+            "original":"https://resizing.flixster.com/Qi2PFmLRuduy0uyfoBbc84MQ5qs=/54x81/v1.bTsxMTE3MTYxMjtqOzE3MTg2OzIwNDg7ODAwOzEyMDA"
+         },
+         "abridged_cast":[  
+            {  
+               "name":"Marlon Brando",
+               "id":"162660428",
+               "characters":[  
+                  "Don Vito Corleone"
+               ]
+            },
+            {  
+               "name":"Al Pacino",
+               "id":"162654461",
+               "characters":[  
+                  "Michael Corleone"
+               ]
+            },
+            {  
+               "name":"James Caan",
+               "id":"162656402",
+               "characters":[  
+                  "Sonny Corleone"
+               ]
+            },
+            {  
+               "name":"Richard S. Castellano",
+               "id":"335717211",
+               "characters":[  
+                  "Clemenza"
+               ]
+            },
+            {  
+               "name":"Robert Duvall",
+               "id":"162652186",
+               "characters":[  
+                  "Tom Hagen"
+               ]
+            }
+         ],
+         "links":{  
+            "self":"http://api.rottentomatoes.com/api/public/v1.0/movies/12911.json",
+            "alternate":"http://www.rottentomatoes.com/m/godfather/",
+            "cast":"http://api.rottentomatoes.com/api/public/v1.0/movies/12911/cast.json",
+            "reviews":"http://api.rottentomatoes.com/api/public/v1.0/movies/12911/reviews.json",
+            "similar":"http://api.rottentomatoes.com/api/public/v1.0/movies/12911/similar.json"
+         }
+      }
+   ],
+   "links":{  
+      "self":"http://api.rottentomatoes.com/api/public/v1.0/movies.json?q=the+godfather&page_limit=1&page=1",
+      "next":"http://api.rottentomatoes.com/api/public/v1.0/movies.json?q=the+godfather&page_limit=1&page=2"
+   },
+   "link_template":"//api.rottentomatoes.com/api/public/v1.0/movies.json?q={search-term}&page_limit={results-per-page}&page={page-number}"
+}
