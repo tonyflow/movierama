@@ -47,7 +47,7 @@ public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
 
 	private final String LANGUAGE = "en-US";
 
-	@Cacheable(value = "moviesCache", key = "#title")
+	@Cacheable(value = "moviesCache")
 	public List<MovieDto> list(String title) {
 
 		String mdb = null;
@@ -73,7 +73,7 @@ public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
 
 					String mdbReviews = restTemplate.getForObject(MOVIE_DB_REVIEWS_URL,
 							String.class,
-							movies.get(title.toLowerCase()).getCompositeId().getMovieDbId(),
+							movie.get("id").asText(),
 							theMovieDbApiKey,
 							LANGUAGE);
 
@@ -86,7 +86,7 @@ public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
 							LocalDate.parse(movie.get("release_date").asText()).getYear(),
 							new ArrayList<String>());
 
-					movies.put(title.toLowerCase(), m);
+					movies.put(movie.get("original_title").asText().toLowerCase(), m);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -95,8 +95,8 @@ public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
 			// retrieve movies from ROTTEN TOMATOES
 			rtm = restTemplate.getForObject(ROTTEN_TOMATOES_LATEST_URL,
 					String.class,
-					theMovieDbApiKey,
-					String.valueOf(PAGING));
+					rottenTomatoesApiKey,
+					String.valueOf(20)); // uses different paging from movie db
 
 			JsonNode rmtResults;
 			try {
@@ -120,6 +120,7 @@ public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
 						movies.get(rottenTitle.toLowerCase()).setDescription(StringUtils.isBlank(description) ||
 								description.length() < rottenDescription.length() ?
 								rottenDescription : description);
+
 						movies.get(rottenTitle.toLowerCase()).addReviews(rottenReviews);
 					} else {
 						MovieDto m = new MovieDto(new CompositeId(movie.get("id").asLong(),
@@ -132,6 +133,9 @@ public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
 
 						movies.put(m.getTitle().toLowerCase(), m);
 					}
+
+					movies.get(rottenTitle.toLowerCase())
+							.setActors(retrieveActors(movie.get("abridged_cast")));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

@@ -1,12 +1,12 @@
 package org.workable.movierama.base;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.workable.movierama.MovieRamaApplication;
 import org.workable.movierama.support.EhCacheUtils;
 
@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { MovieRamaApplication.class })
-@WebAppConfiguration
 public class AbstractMovieRamaTest {
 
 	@Autowired
@@ -32,6 +31,15 @@ public class AbstractMovieRamaTest {
 		EhCacheUtils.inspectCache();
 
 		EhCacheUtils.clearCache();
+	}
+
+	@After
+	public void tearDown() {
+		System.out.println("================================");
+		System.out.println("================================");
+		System.out.println("================================");
+		EhCacheUtils.inspectCache();
+
 	}
 
 }

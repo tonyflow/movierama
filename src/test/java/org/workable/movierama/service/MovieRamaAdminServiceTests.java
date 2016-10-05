@@ -23,12 +23,12 @@ import org.workable.movierama.base.AbstractMovieRamaTest;
 
 public class MovieRamaAdminServiceTests extends AbstractMovieRamaTest {
 
+	@Mock
+	private RestTemplate mockRestTemplate;
+
 	@Autowired
 	@InjectMocks
 	private MovieRamaAdminService adminService;
-
-	@Mock
-	private RestTemplate mockRestTemplate;
 
 	@Before
 	public void setup() throws Exception {
