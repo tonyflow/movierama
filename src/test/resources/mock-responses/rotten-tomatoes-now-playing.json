@@ -1,76 +1,147 @@
 {  
-   "total":115,
+   "total":143,
    "movies":[  
       {  
-         "id":"770687943",
-         "title":"Harry Potter and the Deathly Hallows - Part 2",
-         "year":2011,
+         "id":"771359360",
+         "title":"Miss Peregrine's Home for Peculiar Children",
+         "year":2016,
          "mpaa_rating":"PG-13",
-         "runtime":130,
-         "critics_consensus":"Thrilling, powerfully acted, and visually dazzling, Deathly Hallows Part II brings the Harry Potter franchise to a satisfying -- and suitably magical -- conclusion.",
+         "runtime":127,
+         "critics_consensus":"",
          "release_dates":{  
-            "theater":"2011-07-15"
+            "theater":"2016-09-30"
          },
          "ratings":{  
-            "critics_rating":"Certified Fresh",
-            "critics_score":97,
+            "critics_rating":"Fresh",
+            "critics_score":64,
             "audience_rating":"Upright",
-            "audience_score":93
+            "audience_score":66
          },
-         "synopsis":"Harry Potter and the Deathly Hallows - Part 2, is the final adventure in the Harry Potter film series. The much-anticipated motion picture event is the second of two full-length parts. In the epic finale, the battle between the good and evil forces of the wizarding world escalates into an all-out war. The stakes have never been higher and no one is safe. But it is Harry Potter who may be called upon to make the ultimate sacrifice as he draws closer to the climactic showdown with Lord Voldemort. It all ends here. -- (C) Warner Bros",
+         "synopsis":"From visionary director Tim Burton, and based upon the best-selling novel, comes an unforgettable motion picture experience. When Jake discovers clues to a mystery that spans different worlds and times, he finds a magical place known as Miss Peregrine's Home for Peculiar Children. But the mystery and danger deepen as he gets to know the residents and learns about their special powers...and their powerful enemies. Ultimately, Jake discovers that only his own special \"peculiarity\" can save his new friends.",
          "posters":{  
-            "thumbnail":"http://content8.flixster.com/movie/11/15/86/11158674_tmb.jpg",
-            "profile":"http://content8.flixster.com/movie/11/15/86/11158674_tmb.jpg",
-            "detailed":"http://content8.flixster.com/movie/11/15/86/11158674_tmb.jpg",
-            "original":"http://content8.flixster.com/movie/11/15/86/11158674_tmb.jpg"
+            "thumbnail":"https://resizing.flixster.com/H1Mt4WpK-Mp431M7w0w7thQyfV8=/54x80/v1.bTsxMTcwODA4MDtqOzE3MTI1OzIwNDg7NTQwOzgwMA",
+            "profile":"https://resizing.flixster.com/H1Mt4WpK-Mp431M7w0w7thQyfV8=/54x80/v1.bTsxMTcwODA4MDtqOzE3MTI1OzIwNDg7NTQwOzgwMA",
+            "detailed":"https://resizing.flixster.com/H1Mt4WpK-Mp431M7w0w7thQyfV8=/54x80/v1.bTsxMTcwODA4MDtqOzE3MTI1OzIwNDg7NTQwOzgwMA",
+            "original":"https://resizing.flixster.com/H1Mt4WpK-Mp431M7w0w7thQyfV8=/54x80/v1.bTsxMTcwODA4MDtqOzE3MTI1OzIwNDg7NTQwOzgwMA"
          },
          "abridged_cast":[  
             {  
-               "name":"Daniel Radcliffe",
+               "name":"Eva Green",
+               "id":"162652241",
                "characters":[  
-                  "Harry Potter"
+                  "Miss Peregrine"
                ]
             },
             {  
-               "name":"Rupert Grint",
+               "name":"Asa Butterfield",
+               "id":"770800323",
                "characters":[  
-                  "Ron Weasley",
-                  "Ron Wesley"
+                  "Jake"
                ]
             },
             {  
-               "name":"Emma Watson",
+               "name":"Chris O'Dowd",
+               "id":"770684214",
                "characters":[  
-                  "Hermione Granger"
+                  "Frank"
                ]
             },
             {  
-               "name":"Helena Bonham Carter",
+               "name":"Allison Janney",
+               "id":"434230452",
                "characters":[  
-                  "Bellatrix Lestrange"
+                  "Dr. Golan"
                ]
             },
             {  
-               "name":"Ralph Fiennes",
+               "name":"Rupert Everett",
+               "id":"162653375",
                "characters":[  
-                  "Lord Voldemort"
+                  "Ornithologist"
                ]
             }
          ],
          "links":{  
-            "self":"http://api.rottentomatoes.com/api/public/v1.0/movies/770687943.json",
-            "alternate":"http://www.rottentomatoes.com/m/harry_potter_and_the_deathly_hallows_part_2/",
-            "cast":"http://api.rottentomatoes.com/api/public/v1.0/movies/770687943/cast.json",
-            "clips":"http://api.rottentomatoes.com/api/public/v1.0/movies/770687943/clips.json",
-            "reviews":"http://api.rottentomatoes.com/api/public/v1.0/movies/770687943/reviews.json",
-            "similar":"http://api.rottentomatoes.com/api/public/v1.0/movies/770687943/similar.json"
+            "self":"http://api.rottentomatoes.com/api/public/v1.0/movies/771359360.json",
+            "alternate":"http://www.rottentomatoes.com/m/miss_peregrines_home_for_peculiar_children/",
+            "cast":"http://api.rottentomatoes.com/api/public/v1.0/movies/771359360/cast.json",
+            "reviews":"http://api.rottentomatoes.com/api/public/v1.0/movies/771359360/reviews.json",
+            "similar":"http://api.rottentomatoes.com/api/public/v1.0/movies/771359360/similar.json"
+         }
+      },
+      {  
+         "id":"771407527",
+         "title":"The Magnificent Seven",
+         "year":2016,
+         "mpaa_rating":"PG-13",
+         "runtime":132,
+         "critics_consensus":"",
+         "release_dates":{  
+            "theater":"2016-09-23"
+         },
+         "ratings":{  
+            "critics_rating":"Fresh",
+            "critics_score":63,
+            "audience_rating":"Upright",
+            "audience_score":79
+         },
+         "synopsis":"Director Antoine Fuqua brings his modern vision to a classic story in Metro-Goldwyn-Mayer Pictures' and Columbia Pictures' The Magnificent Seven. With the town of Rose Creek under the deadly control of industrialist Bartholomew Bogue (Peter Sarsgaard), the desperate townspeople, led by Emma Cullen (Haley Bennett), employ protection from seven outlaws, bounty hunters, gamblers and hired guns - Sam Chisolm (Denzel Washington), Josh Farraday (Chris Pratt), Goodnight Robicheaux (Ethan Hawke), Jack Horne (Vincent D'Onofrio), Billy Rocks (Byung-Hun Lee), Vasquez (Manuel Garcia-Rulfo), and Red Harvest (Martin Sensmeier). As they prepare the town for the violent showdown that they know is coming, these seven mercenaries find themselves fighting for more than money.",
+         "posters":{  
+            "thumbnail":"https://resizing.flixster.com/a6Ca-XtkcE8Agz1PBJjvLlMbczk=/54x80/v1.bTsxMjIyMTk5MztqOzE3MTQ0OzIwNDg7MjAyNTszMDAw",
+            "profile":"https://resizing.flixster.com/a6Ca-XtkcE8Agz1PBJjvLlMbczk=/54x80/v1.bTsxMjIyMTk5MztqOzE3MTQ0OzIwNDg7MjAyNTszMDAw",
+            "detailed":"https://resizing.flixster.com/a6Ca-XtkcE8Agz1PBJjvLlMbczk=/54x80/v1.bTsxMjIyMTk5MztqOzE3MTQ0OzIwNDg7MjAyNTszMDAw",
+            "original":"https://resizing.flixster.com/a6Ca-XtkcE8Agz1PBJjvLlMbczk=/54x80/v1.bTsxMjIyMTk5MztqOzE3MTQ0OzIwNDg7MjAyNTszMDAw"
+         },
+         "abridged_cast":[  
+            {  
+               "name":"Denzel Washington",
+               "id":"162661439",
+               "characters":[  
+                  "Chisolm"
+               ]
+            },
+            {  
+               "name":"Chris Pratt",
+               "id":"770692298",
+               "characters":[  
+                  "Josh Faraday"
+               ]
+            },
+            {  
+               "name":"Ethan Hawke",
+               "id":"162660464",
+               "characters":[  
+                  "Goodnight Robicheaux"
+               ]
+            },
+            {  
+               "name":"Vincent D'Onofrio",
+               "id":"162654048",
+               "characters":[  
+                  "Jack Horne"
+               ]
+            },
+            {  
+               "name":"Lee Byung-hun",
+               "id":"285359670",
+               "characters":[  
+                  "Billy Rocks"
+               ]
+            }
+         ],
+         "links":{  
+            "self":"http://api.rottentomatoes.com/api/public/v1.0/movies/771407527.json",
+            "alternate":"http://www.rottentomatoes.com/m/the_magnificent_seven_2016/",
+            "cast":"http://api.rottentomatoes.com/api/public/v1.0/movies/771407527/cast.json",
+            "reviews":"http://api.rottentomatoes.com/api/public/v1.0/movies/771407527/reviews.json",
+            "similar":"http://api.rottentomatoes.com/api/public/v1.0/movies/771407527/similar.json"
          }
       }
    ],
    "links":{  
-      "self":"http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?page_limit=1&country=us&page=1",
-      "next":"http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?page_limit=1&country=us&page=2",
-      "alternate":"http://www.rottentomatoes.com/movie/in_theaters.php"
+      "self":"http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?page_limit=5&country=us&page=1",
+      "next":"http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?page_limit=5&country=us&page=2",
+      "alternate":"http://www.rottentomatoes.com/movie/in_theaters"
    },
-   "link_template":"http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?page_limit={results_per_page}&page={page_number}&country={country-code}"
+   "link_template":"//api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?page_limit={results_per_page}&page={page_number}&country={country-code}"
 }

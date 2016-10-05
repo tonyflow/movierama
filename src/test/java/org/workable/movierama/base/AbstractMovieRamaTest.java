@@ -36,8 +36,6 @@ public class AbstractMovieRamaTest {
 	@After
 	public void tearDown() {
 		System.out.println("================================");
-		System.out.println("================================");
-		System.out.println("================================");
 		EhCacheUtils.inspectCache();
 
 	}

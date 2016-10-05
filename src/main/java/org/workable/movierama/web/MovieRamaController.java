@@ -2,8 +2,10 @@ package org.workable.movierama.web;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,14 +18,22 @@ import org.workable.movierama.service.MovieRamaAdminService;
 @RequestMapping(value = "/movies")
 public class MovieRamaController {
 
+	Logger LOGGER = LoggerFactory.getLogger(MovieRamaController.class);
+
 	@Autowired
 	private MovieRamaAdminService adminService;
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<MovieDto> list(
 			@RequestParam(value = "title", required = false) String title) {
+
+		if (StringUtils.isNotBlank(title)) {
+			LOGGER.info("Received request for title " + title);
+		} else {
+			LOGGER.info("Retrieving latest movies on theaters right now...");
+		}
+
 		return adminService.list(title);
 	}
 
-	
 }
