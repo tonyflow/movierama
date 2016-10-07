@@ -29,6 +29,7 @@ import org.workable.movierama.api.dto.MovieDto;
 import org.workable.movierama.service.MovieRamaAdminService;
 import org.workable.movierama.web.MovieRamaController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -84,23 +85,8 @@ public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
 
 			for (JsonNode movie : rmtResults) {
 
-				String rtmReviews = restTemplate.getForObject(ROTTEN_TOMATOES_REVIEWS_URL,
-						String.class,
-						movie.get("id").asText(),
-						rottenTomatoesApiKey);
+				retrieveRTReviewsAndBuild(movies, movie);
 
-				Long rottenReviews = mapper.readTree(rtmReviews).get("total").asLong();
-
-				MovieDto m = new MovieDto(
-						new CompositeId(null, // rotten tomatoes id
-								movie.get("id").asLong()), // movie db id
-						movie.get("title").asText(),
-						movie.get("synopsis").asText(),
-						rottenReviews, // numberOfReviews
-						LocalDate.parse(movie.get("release_dates").get("theater").asText()).getYear(),
-						retrieveActors(movie.get("abridged_cast")));
-
-				movies.put(movie.get("title").asText().toLowerCase(), m);
 			}
 		} catch (Exception e) {
 
@@ -119,45 +105,7 @@ public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
 			mdbResults = mapper.readTree(mdb).get("results");
 
 			for (JsonNode movie : mdbResults) {
-				String mdbReviews = restTemplate.getForObject(MOVIE_DB_REVIEWS_URL,
-						String.class,
-						movie.get("id").asText(),
-						theMovieDbApiKey,
-						LANGUAGE);
-
-				Long dbr = mapper.readTree(mdbReviews).get("total_results").asLong();
-
-				String mdbTitle = movie.get("original_title").asText();
-				String mdbDescription = movie.get("overview").asText();
-
-				if (movies.containsKey(movie.get("original_title").asText().toLowerCase())) {
-
-					// original title,release date actors were evaluated on
-					// rotten tomatoes query
-
-					String description = movies.get(mdbTitle.toLowerCase()).getDescription();
-
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug("Rotten tomatoes description is : " + description +
-								" \n Movie DB description is : " + mdbDescription);
-					}
-					// check description length
-					movies.get(mdbTitle.toLowerCase()).setDescription(StringUtils.isBlank(description) ||
-							description.length() < mdbDescription.length() ?
-							mdbDescription : description);
-					// add more reviews
-					movies.get(mdbTitle.toLowerCase()).addReviews(dbr);
-				} else {
-					MovieDto m = new MovieDto(new CompositeId(movie.get("id").asLong(),
-							null),
-							movie.get("title").asText(),
-							movie.get("synopsis").asText(),
-							dbr,
-							LocalDate.parse(movie.get("release_dates").get("theater").asText()).getYear(),
-							retrieveActors(movie.get("original_title")));
-
-					movies.put(m.getTitle().toLowerCase(), m);
-				}
+				merge(movies, movie);
 
 			}
 		} catch (Exception e) {
@@ -171,6 +119,30 @@ public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
 		String rtm;
 		// get movie
 
+		// retrieve movies from ROTTEN TOMATOES
+		rtm = restTemplate.getForObject(ROTTEN_TOMATOES_SEARCH_URL,
+				String.class,
+				rottenTomatoesApiKey,
+				title,
+				String.valueOf(PAGING));
+
+		try {
+
+			JsonNode rtmResults = mapper.readTree(rtm).get("movies");
+
+			for (JsonNode movie : rtmResults) {
+				if (movie.get("title").asText().equalsIgnoreCase(title)) {
+					retrieveRTReviewsAndBuild(movies, movie);
+					break;
+				}
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// retrieve movies from MOVIE DB
+
 		LOGGER.info("Retrieving data from Movie DB");
 
 		mdb = restTemplate.getForObject(MOVIE_DB_SEARCH_URL,
@@ -181,103 +153,112 @@ public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
 				theMovieDbApiKey);
 
 		try {
-
-			// retrieve Movie Db id
 			JsonNode mdbResults = mapper.readTree(mdb).get("results");
 
 			for (JsonNode movie : mdbResults) {
-				if (movie.get("original_title").asText().equalsIgnoreCase(title)) {
-					MovieDto m = new MovieDto(
-							new CompositeId(null, // rotten tomatoes id
-									movie.get("id").asLong()), // movie db
-																// id
-							movie.get("original_title").asText(),
-							movie.get("overview").asText(),
-							null, // numberOfReviews
-							LocalDate.parse(movie.get("release_date").asText()).getYear(),
-							retrieveActors(movie.get("id").asText()));
-					movies.put(title.toLowerCase(), m);
-					break;
-				}
-			}
-
-			if (!movies.isEmpty()) {
-				// Retrieve Movie Db reviews
-				String mdbReviews = restTemplate.getForObject(MOVIE_DB_REVIEWS_URL,
-						String.class,
-						movies.get(title.toLowerCase()).getCompositeId().getMovieDbId(),
-						theMovieDbApiKey,
-						LANGUAGE);
-				movies.get(title.toLowerCase())
-						.setNumberOfReviews(mapper.readTree(mdbReviews).get("total_results").asLong());
-
-			} else {
-				// TODO Log Info. No movie was found with the movie db API.
-			}
-
-		} catch (IOException e) {
-			// TODO Logging
-			e.printStackTrace();
-		}
-
-		// retrieve movies from ROTTEN TOMATOES
-		rtm = restTemplate.getForObject(ROTTEN_TOMATOES_SEARCH_URL,
-				String.class,
-				rottenTomatoesApiKey,
-				title,
-				String.valueOf(PAGING));
-
-		try {
-			JsonNode rmtResults = mapper.readTree(rtm).get("movies");
-
-			for (JsonNode movie : rmtResults) {
 
 				if (movie.get("title").asText().equalsIgnoreCase(title)) {
-
-					String rottenTitle = movie.get("title").asText();
-					String rottenDescription = movie.get("synopsis").asText();
-
-					String rtmReviews = restTemplate.getForObject(ROTTEN_TOMATOES_REVIEWS_URL,
-							String.class,
-							movie.get("id").asText(),
-							rottenTomatoesApiKey);
-
-					Long rottenReviews = mapper.readTree(rtmReviews).get("total").asLong();
-
-					if (movies.containsKey(rottenTitle.toLowerCase())) {
-
-						String description = movies.get(rottenTitle.toLowerCase()).getDescription();
-
-						movies.get(rottenTitle.toLowerCase()).setDescription(StringUtils.isBlank(description) ||
-								description.length() < rottenDescription.length() ?
-								rottenDescription : description);
-						movies.get(rottenTitle.toLowerCase()).addReviews(rottenReviews);
-
-					} else {
-						MovieDto m = new MovieDto(new CompositeId(movie.get("id").asLong(),
-								null),
-								movie.get("title").asText(),
-								movie.get("synopsis").asText(),
-								rottenReviews,
-								LocalDate.parse(movie.get("release_dates").get("theater").asText()).getYear(),
-								null);
-
-						movies.put(m.getTitle().toLowerCase(), m);
-					}
-
-					movies.get(rottenTitle.toLowerCase())
-							.setActors(retrieveActors(movie.get("abridged_cast")));
+					merge(movies, movie);
 
 					break;
 				}
+
+			}
+		} catch (Exception e) {
+
+		}
+
+	}
+
+	/**
+	 * Will add reviews found for the movie from both APIs and evaluate the
+	 * final description the MovieRama page will present. Original title,release
+	 * date actors were evaluated on rotten tomatoes query
+	 * 
+	 * @param movies
+	 * @param movie
+	 * @throws IOException
+	 * @throws JsonProcessingException
+	 */
+	private void merge(Map<String, MovieDto> movies, JsonNode movie) throws IOException, JsonProcessingException {
+		String mdbReviews = restTemplate.getForObject(MOVIE_DB_REVIEWS_URL,
+				String.class,
+				movie.get("id").asText(),
+				theMovieDbApiKey,
+				LANGUAGE);
+
+		Long dbr = mapper.readTree(mdbReviews).get("total_results").asLong();
+
+		String mdbTitle = movie.get("original_title").asText();
+		String mdbDescription = movie.get("overview").asText();
+
+		if (movies.containsKey(movie.get("original_title").asText().toLowerCase())) {
+
+			String description = movies.get(mdbTitle.toLowerCase()).getDescription();
+
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Rotten tomatoes description is : " + description +
+						" \n Movie DB description is : " + mdbDescription);
 			}
 
-		} catch (IOException e) {
-			// TODO Logging
-			e.printStackTrace();
+			if (StringUtils.isBlank(description) ||
+					description.length() < mdbDescription.length()) {
+				movies.get(mdbTitle.toLowerCase()).setDescription(mdbDescription);
+			}
+			movies.get(mdbTitle.toLowerCase()).addReviews(dbr);
+		} else {
+			MovieDto m = new MovieDto(new CompositeId(null,
+					movie.get("id").asLong()),
+					movie.get("original_title").asText(),
+					movie.get("overview").asText(),
+					dbr,
+					LocalDate.parse(movie.get("release_date").asText()).getYear(),
+					retrieveActors(movie.get("id").asText()));
+
+			movies.put(m.getTitle().toLowerCase(), m);
 		}
 	}
 
+	/**
+	 * Will retrieve review from rotten tomatoes and produce the initial movie
+	 * dto residing in movies map.
+	 * 
+	 * @param movies
+	 * @param movie
+	 * @throws IOException
+	 * @throws JsonProcessingException
+	 */
+	private void retrieveRTReviewsAndBuild(Map<String, MovieDto> movies, JsonNode movie) throws IOException, JsonProcessingException {
+		String rtmReviews = restTemplate.getForObject(ROTTEN_TOMATOES_REVIEWS_URL,
+				String.class,
+				movie.get("id").asText(),
+				rottenTomatoesApiKey);
+
+		Long rottenReviews = mapper.readTree(rtmReviews).get("total").asLong();
+
+		MovieDto m = new MovieDto(
+				new CompositeId(movie.get("id").asLong(), // rotten
+															// tomatoes
+															// id
+						null), // movie db
+								// id
+				movie.get("title").asText(),
+				movie.get("synopsis").asText(),
+				rottenReviews, // numberOfReviews
+				LocalDate.parse(movie.get("release_dates").get("theater").asText()).getYear(),
+				retrieveActors(movie.get("abridged_cast")));
+		movies.put(movie.get("title").asText().toLowerCase(), m);
+	}
+
+	/**
+	 * Used to retrieved actors from the Movie Db API. The Movie Db API has a
+	 * rate limit and thus was not preferred to initially fetch movie cast. Only
+	 * cast not having been retrieved by the rotten tomatoes API will be queried
+	 * by the Movie Db API.
+	 * 
+	 * @param movieId
+	 * @return
+	 */
 	private List<String> retrieveActors(String movieId) {
 
 		LOGGER.info("Retrieving actor data for movie with id " + movieId);
@@ -303,6 +284,13 @@ public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
 		return al;
 	}
 
+	/**
+	 * Used to parse actors from the "abridged_cast" element of rotten tomatoes'
+	 * search response API call.
+	 * 
+	 * @param actors
+	 * @return
+	 */
 	private List<String> retrieveActors(JsonNode actors) {
 
 		ArrayList<String> al = new ArrayList<String>();

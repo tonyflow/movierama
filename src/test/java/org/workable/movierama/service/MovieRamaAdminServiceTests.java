@@ -58,35 +58,6 @@ public class MovieRamaAdminServiceTests extends AbstractMovieRamaTest {
 	@Test
 	public void testListMovie() throws Exception {
 
-		// MOVIE DB mocks
-		// --- Mock Search ----------
-		String mdbSearchResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-search.json"));
-
-		mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/search/movie?"
-				+ "page=1&"
-				+ "query=the%20godfather&"
-				+ "language=en-US&"
-				+ "api_key=" + theMovieDbApiKey))
-				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess(mdbSearchResponse, MediaType.APPLICATION_JSON_UTF8));
-
-		// -- Mock Credits ----------
-		String mdbCreditsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-credits.json"));
-
-		mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/movie/238/credits?"
-				+ "api_key=" + theMovieDbApiKey))
-				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess(mdbCreditsResponse, MediaType.APPLICATION_JSON_UTF8));
-
-		String mdbReviewsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-reviews.json"));
-
-		// --- Mock Reviews ----------
-		mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/movie/238/reviews?"
-				+ "api_key=" + theMovieDbApiKey + "&"
-				+ "language=en-US"))
-				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess(mdbReviewsResponse, MediaType.APPLICATION_JSON_UTF8));
-
 		// ROTTEN TOMATOES
 		// --- Mock Search ----------
 		String rtmSearchResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/rotten-tomatoes-search.json"));
@@ -105,6 +76,35 @@ public class MovieRamaAdminServiceTests extends AbstractMovieRamaTest {
 				+ "apikey=" + rottenTomatoesApiKey))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess(rtmReviewsResponse, MediaType.APPLICATION_JSON_UTF8));
+
+		// MOVIE DB mocks
+		// --- Mock Search ----------
+		String mdbSearchResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-search.json"));
+
+		mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/search/movie?"
+				+ "page=1&"
+				+ "query=the%20godfather&"
+				+ "language=en-US&"
+				+ "api_key=" + theMovieDbApiKey))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess(mdbSearchResponse, MediaType.APPLICATION_JSON_UTF8));
+
+		String mdbReviewsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-reviews.json"));
+
+		// --- Mock Reviews ----------
+		mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/movie/238/reviews?"
+				+ "api_key=" + theMovieDbApiKey + "&"
+				+ "language=en-US"))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess(mdbReviewsResponse, MediaType.APPLICATION_JSON_UTF8));
+
+		// -- Mock Credits ----------
+		String mdbCreditsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-credits.json"));
+
+		mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/movie/238/credits?"
+				+ "api_key=" + theMovieDbApiKey))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess(mdbCreditsResponse, MediaType.APPLICATION_JSON_UTF8));
 
 		List<MovieDto> result = adminService.list("the godfather");
 
