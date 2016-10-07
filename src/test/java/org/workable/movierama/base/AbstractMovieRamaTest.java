@@ -1,5 +1,11 @@
 package org.workable.movierama.base;
 
+import java.lang.reflect.Method;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -38,6 +44,35 @@ public class AbstractMovieRamaTest {
 		System.out.println("================================");
 		EhCacheUtils.inspectCache();
 
+	}
+
+	/**
+	 * Was our movie actually put in cache.
+	 * 
+	 * @return
+	 */
+	protected boolean isCached(String title) {
+		CacheManager manager = CacheManager.getInstance();
+		Ehcache mc = manager.getEhcache("moviesCache");
+
+		for (Object key : mc.getKeys()) {
+			Element e = mc.getQuiet(key);
+
+			Object o = e.getObjectValue();
+
+			Class<? extends Object> clazz = o.getClass();
+
+			try {
+				Method m = clazz.getDeclaredMethod("get");
+				Object movieDto = m.invoke(o, 0);
+				clazz = o.getClass();
+
+				return movieDto != null && clazz.getDeclaredField("title").equals(title);
+			} catch (Exception e1) {
+			}
+		}
+
+		return true;
 	}
 
 }

@@ -70,6 +70,14 @@ public class MovieRamaAdminServiceTests extends AbstractMovieRamaTest {
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess(mdbSearchResponse, MediaType.APPLICATION_JSON_UTF8));
 
+		// -- Mock Credits ----------
+		String mdbCreditsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-credits.json"));
+
+		mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/movie/238/credits?"
+				+ "api_key=" + theMovieDbApiKey))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess(mdbCreditsResponse, MediaType.APPLICATION_JSON_UTF8));
+
 		String mdbReviewsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-reviews.json"));
 
 		// --- Mock Reviews ----------
@@ -114,6 +122,8 @@ public class MovieRamaAdminServiceTests extends AbstractMovieRamaTest {
 		for (String actor : result.get(0).getActors()) {
 			Assert.assertThat(actor, Matchers.isOneOf(ACTORS));
 		}
+
+		Assert.assertTrue(isCached("the godfather"));
 	}
 
 	/**
@@ -124,6 +134,25 @@ public class MovieRamaAdminServiceTests extends AbstractMovieRamaTest {
 	 */
 	@Test
 	public void testListLatest() throws Exception {
+
+		// ROTTEN TOMATOES mocks
+		// -- Mock Now Playing -----------
+		String rtmNowPlayingResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/rotten-tomatoes-now-playing.json"));
+		mockServer.expect(MockRestRequestMatchers.requestTo("http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?"
+				+ "apikey=" + rottenTomatoesApiKey + "&"
+				+ "page_limit=20"))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess(rtmNowPlayingResponse, MediaType.APPLICATION_JSON_UTF8));
+
+		String rtmReviewsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/rotten-tomatoes-reviews.json"));
+
+		for (String movieId : RTM_MOVIES) {
+			mockServer.expect(MockRestRequestMatchers.requestTo("http://api.rottentomatoes.com/api/public/v1.0/movies/" + movieId + "/reviews.json?"
+					+ "apikey=" + rottenTomatoesApiKey))
+					.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+					.andRespond(MockRestResponseCreators.withSuccess(rtmReviewsResponse, MediaType.APPLICATION_JSON_UTF8));
+
+		}
 
 		// MOVIE DB mocks
 		// -- Mock Now Playing -----------
@@ -155,25 +184,6 @@ public class MovieRamaAdminServiceTests extends AbstractMovieRamaTest {
 					+ "api_key=" + theMovieDbApiKey))
 					.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 					.andRespond(MockRestResponseCreators.withSuccess(mdbCreditsResponse, MediaType.APPLICATION_JSON_UTF8));
-
-		}
-
-		// ROTTEN TOMATOES mocks
-		// -- Mock Now Playing -----------
-		String rtmNowPlayingResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/rotten-tomatoes-now-playing.json"));
-		mockServer.expect(MockRestRequestMatchers.requestTo("http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?"
-				+ "apikey=" + rottenTomatoesApiKey + "&"
-				+ "page_limit=20"))
-				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess(rtmNowPlayingResponse, MediaType.APPLICATION_JSON_UTF8));
-
-		String rtmReviewsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/rotten-tomatoes-reviews.json"));
-
-		for (String movieId : RTM_MOVIES) {
-			mockServer.expect(MockRestRequestMatchers.requestTo("http://api.rottentomatoes.com/api/public/v1.0/movies/" + movieId + "/reviews.json?"
-					+ "apikey=" + rottenTomatoesApiKey))
-					.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-					.andRespond(MockRestResponseCreators.withSuccess(rtmReviewsResponse, MediaType.APPLICATION_JSON_UTF8));
 
 		}
 

@@ -1,12 +1,11 @@
 package org.workable.movierama.web;
 
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,8 +22,9 @@ public class MovieRamaController {
 	@Autowired
 	private MovieRamaAdminService adminService;
 
+	@CrossOrigin(origins = "http://localhost")
 	@RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public List<MovieDto> list(
+	public Iterable<MovieDto> list(
 			@RequestParam(value = "title", required = false) String title) {
 
 		if (StringUtils.isNotBlank(title)) {

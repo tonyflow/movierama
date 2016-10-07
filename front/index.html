@@ -1,0 +1,49 @@
+    <!DOCTYPE HTML>
+    <html ng-app="movieRama">
+    <head>
+    	<title>MovieRama</title>
+    	<meta charset="UTF-8"> 
+    	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+
+        <script src="listMovies.js"></script>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    </head>
+    <body>
+    	
+    	<div class="row">
+            <div class="col-md-11 col-md-offset-1">
+                <h1>MovieRama</h1>
+
+                <div ng-controller="listMovies">
+                    
+                    <input type="text" ng-model="movie_title" required
+                        placeholder="enter full movie name">
+                    <input type="button" ng-click="doFetch()" value="Submit"  />
+                    
+                    <p ng-model="test_string"></p>
+
+
+                    <ul>
+                        <li ng-repeat="movie in movies">
+                             <h4>{{movie.title}}</h4>
+                             <p><strong>Overview</strong> : {{movie.description}}</p>
+                             <p><strong>Reviews</strong>: {{movie.numberOfReviews}}</p>
+                             <p><strong>Production Year</strong>: {{movie.productionYear}}</p>
+                              <p> <strong>Cast</strong> </p>
+                              <ul>
+                                   <li ng-repeat="actor in movie.actors">
+                                        {{actor}}
+                                     </li>
+                              </ul>
+
+                              <br>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </body>
+    </html>

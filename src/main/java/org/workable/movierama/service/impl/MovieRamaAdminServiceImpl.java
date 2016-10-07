@@ -72,41 +72,6 @@ public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
 		String rtm;
 		// get latest
 
-		// retrieve movies from MOVIE DB
-		LOGGER.info("Retrieving	now playing data from Movie DB");
-
-		mdb = restTemplate.getForObject(MOVIE_DB_LATEST_URL,
-				String.class,
-				theMovieDbApiKey,
-				LANGUAGE);
-
-		JsonNode mdbResults;
-		try {
-			mdbResults = mapper.readTree(mdb).get("results");
-
-			for (JsonNode movie : mdbResults) {
-
-				String mdbReviews = restTemplate.getForObject(MOVIE_DB_REVIEWS_URL,
-						String.class,
-						movie.get("id").asText(),
-						theMovieDbApiKey,
-						LANGUAGE);
-
-				MovieDto m = new MovieDto(
-						new CompositeId(null, // rotten tomatoes id
-								movie.get("id").asLong()), // movie db id
-						movie.get("original_title").asText(),
-						movie.get("overview").asText(),
-						mapper.readTree(mdbReviews).get("total_results").asLong(), // numberOfReviews
-						LocalDate.parse(movie.get("release_date").asText()).getYear(),
-						retrieveActors(movie.get("id").asText()));
-
-				movies.put(movie.get("original_title").asText().toLowerCase(), m);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		// retrieve movies from ROTTEN TOMATOES
 		rtm = restTemplate.getForObject(ROTTEN_TOMATOES_LATEST_URL,
 				String.class,
@@ -126,38 +91,79 @@ public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
 
 				Long rottenReviews = mapper.readTree(rtmReviews).get("total").asLong();
 
-				String rottenTitle = movie.get("title").asText();
-				String rottenDescription = movie.get("synopsis").asText();
+				MovieDto m = new MovieDto(
+						new CompositeId(null, // rotten tomatoes id
+								movie.get("id").asLong()), // movie db id
+						movie.get("title").asText(),
+						movie.get("synopsis").asText(),
+						rottenReviews, // numberOfReviews
+						LocalDate.parse(movie.get("release_dates").get("theater").asText()).getYear(),
+						retrieveActors(movie.get("abridged_cast")));
 
-				if (movies.containsKey(movie.get("title").asText().toLowerCase())) {
+				movies.put(movie.get("title").asText().toLowerCase(), m);
+			}
+		} catch (Exception e) {
 
-					// original title,release date were evaluated on
-					// movie db query
+		}
 
-					String description = movies.get(rottenTitle.toLowerCase()).getDescription();
+		// retrieve movies from MOVIE DB
+		LOGGER.info("Retrieving	now playing data from Movie DB");
 
+		mdb = restTemplate.getForObject(MOVIE_DB_LATEST_URL,
+				String.class,
+				theMovieDbApiKey,
+				LANGUAGE);
+
+		JsonNode mdbResults;
+		try {
+			mdbResults = mapper.readTree(mdb).get("results");
+
+			for (JsonNode movie : mdbResults) {
+				String mdbReviews = restTemplate.getForObject(MOVIE_DB_REVIEWS_URL,
+						String.class,
+						movie.get("id").asText(),
+						theMovieDbApiKey,
+						LANGUAGE);
+
+				Long dbr = mapper.readTree(mdbReviews).get("total_results").asLong();
+
+				String mdbTitle = movie.get("original_title").asText();
+				String mdbDescription = movie.get("overview").asText();
+
+				if (movies.containsKey(movie.get("original_title").asText().toLowerCase())) {
+
+					// original title,release date actors were evaluated on
+					// rotten tomatoes query
+
+					String description = movies.get(mdbTitle.toLowerCase()).getDescription();
+
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Rotten tomatoes description is : " + description +
+								" \n Movie DB description is : " + mdbDescription);
+					}
 					// check description length
-					movies.get(rottenTitle.toLowerCase()).setDescription(StringUtils.isBlank(description) ||
-							description.length() < rottenDescription.length() ?
-							rottenDescription : description);
+					movies.get(mdbTitle.toLowerCase()).setDescription(StringUtils.isBlank(description) ||
+							description.length() < mdbDescription.length() ?
+							mdbDescription : description);
 					// add more reviews
-					movies.get(rottenTitle.toLowerCase()).addReviews(rottenReviews);
+					movies.get(mdbTitle.toLowerCase()).addReviews(dbr);
 				} else {
 					MovieDto m = new MovieDto(new CompositeId(movie.get("id").asLong(),
 							null),
 							movie.get("title").asText(),
 							movie.get("synopsis").asText(),
-							rottenReviews,
+							dbr,
 							LocalDate.parse(movie.get("release_dates").get("theater").asText()).getYear(),
-							retrieveActors(movie.get("abridged_cast")));
+							retrieveActors(movie.get("original_title")));
 
 					movies.put(m.getTitle().toLowerCase(), m);
 				}
 
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+
 		}
+
 	}
 
 	private void getMovie(String title, Map<String, MovieDto> movies) {
