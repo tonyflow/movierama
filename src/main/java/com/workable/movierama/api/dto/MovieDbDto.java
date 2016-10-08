@@ -1,4 +1,4 @@
-package org.workable.movierama.api.dto;
+package com.workable.movierama.api.dto;
 
 import java.time.LocalDateTime;
 

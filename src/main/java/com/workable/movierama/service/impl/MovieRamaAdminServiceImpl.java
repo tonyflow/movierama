@@ -1,12 +1,12 @@
-package org.workable.movierama.service.impl;
+package com.workable.movierama.service.impl;
 
-import static org.workable.movierama.api.UrlConstants.MOVIE_DB_CREDITS_URL;
-import static org.workable.movierama.api.UrlConstants.MOVIE_DB_LATEST_URL;
-import static org.workable.movierama.api.UrlConstants.MOVIE_DB_REVIEWS_URL;
-import static org.workable.movierama.api.UrlConstants.MOVIE_DB_SEARCH_URL;
-import static org.workable.movierama.api.UrlConstants.ROTTEN_TOMATOES_LATEST_URL;
-import static org.workable.movierama.api.UrlConstants.ROTTEN_TOMATOES_REVIEWS_URL;
-import static org.workable.movierama.api.UrlConstants.ROTTEN_TOMATOES_SEARCH_URL;
+import static com.workable.movierama.api.UrlConstants.MOVIE_DB_CREDITS_URL;
+import static com.workable.movierama.api.UrlConstants.MOVIE_DB_LATEST_URL;
+import static com.workable.movierama.api.UrlConstants.MOVIE_DB_REVIEWS_URL;
+import static com.workable.movierama.api.UrlConstants.MOVIE_DB_SEARCH_URL;
+import static com.workable.movierama.api.UrlConstants.ROTTEN_TOMATOES_LATEST_URL;
+import static com.workable.movierama.api.UrlConstants.ROTTEN_TOMATOES_REVIEWS_URL;
+import static com.workable.movierama.api.UrlConstants.ROTTEN_TOMATOES_SEARCH_URL;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -24,14 +24,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.workable.movierama.api.dto.CompositeId;
-import org.workable.movierama.api.dto.MovieDto;
-import org.workable.movierama.service.MovieRamaAdminService;
-import org.workable.movierama.web.MovieRamaController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.workable.movierama.api.dto.CompositeId;
+import com.workable.movierama.api.dto.MovieDto;
+import com.workable.movierama.service.MovieRamaAdminService;
+import com.workable.movierama.web.MovieRamaController;
 
 @Component
 public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {

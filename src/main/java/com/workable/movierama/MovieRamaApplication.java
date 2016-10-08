@@ -1,4 +1,4 @@
-package org.workable.movierama;
+package com.workable.movierama;
 
 import java.util.Arrays;
 import java.util.List;

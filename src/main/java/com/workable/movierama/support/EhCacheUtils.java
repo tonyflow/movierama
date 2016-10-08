@@ -1,4 +1,4 @@
-package org.workable.movierama.support;
+package com.workable.movierama.support;
 
 import java.io.IOException;
 import java.io.PrintWriter;

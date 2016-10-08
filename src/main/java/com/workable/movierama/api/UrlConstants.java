@@ -1,4 +1,4 @@
-package org.workable.movierama.api;
+package com.workable.movierama.api;
 
 public abstract class UrlConstants {
 

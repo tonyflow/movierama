@@ -1,4 +1,4 @@
-package org.workable.movierama.service;
+package com.workable.movierama.service;
 
 import java.util.List;
 
@@ -15,8 +15,10 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
-import org.workable.movierama.api.dto.MovieDto;
-import org.workable.movierama.base.AbstractMovieRamaTest;
+
+import com.workable.movierama.api.dto.MovieDto;
+import com.workable.movierama.base.AbstractMovieRamaTest;
+import com.workable.movierama.service.MovieRamaAdminService;
 
 public class MovieRamaAdminServiceTests extends AbstractMovieRamaTest {
 

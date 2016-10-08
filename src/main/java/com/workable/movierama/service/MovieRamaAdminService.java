@@ -1,8 +1,8 @@
-package org.workable.movierama.service;
+package com.workable.movierama.service;
 
 import java.util.List;
 
-import org.workable.movierama.api.dto.MovieDto;
+import com.workable.movierama.api.dto.MovieDto;
 
 public interface MovieRamaAdminService {
 

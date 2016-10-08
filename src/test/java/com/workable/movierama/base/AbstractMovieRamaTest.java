@@ -1,4 +1,4 @@
-package org.workable.movierama.base;
+package com.workable.movierama.base;
 
 import java.lang.reflect.Method;
 
@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.workable.movierama.MovieRamaApplication;
-import org.workable.movierama.support.EhCacheUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.workable.movierama.MovieRamaApplication;
+import com.workable.movierama.support.EhCacheUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { MovieRamaApplication.class })

@@ -1,4 +1,4 @@
-package org.workable.movierama.web;
+package com.workable.movierama.web;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.workable.movierama.api.dto.MovieDto;
-import org.workable.movierama.service.MovieRamaAdminService;
+
+import com.workable.movierama.api.dto.MovieDto;
+import com.workable.movierama.service.MovieRamaAdminService;
 
 @RestController
 @RequestMapping(value = "/movies")
