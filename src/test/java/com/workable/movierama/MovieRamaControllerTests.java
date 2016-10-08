@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.workable.movierama.base.AbstractMovieRamaTest;
-import com.workable.movierama.service.MovieRamaAdminService;
+import com.workable.movierama.service.MovieRamaService;
 import com.workable.movierama.web.MovieRamaController;
 
 @WebAppConfiguration
@@ -32,7 +32,7 @@ public class MovieRamaControllerTests extends AbstractMovieRamaTest {
 	private MovieRamaController controller;
 
 	@Mock
-	private MovieRamaAdminService mockMovieRamaAdminService;
+	private MovieRamaService mockMovieRamaAdminService;
 
 	@Before
 	public void setup() throws Exception {

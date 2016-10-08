@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.workable.movierama.api.dto.Movie;
 
-public interface MovieRamaAdminService {
+public interface MovieRamaService {
 
 	List<Movie> list(String title);
 

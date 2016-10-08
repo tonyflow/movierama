@@ -5,12 +5,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.workable.movierama.base.AbstractMovieRamaTest;
-import com.workable.movierama.service.MovieRamaAdminService;
+import com.workable.movierama.service.MovieRamaService;
 
 public class PerformanceTests extends AbstractMovieRamaTest {
 
 	@Autowired
-	private MovieRamaAdminService adminService;
+	private MovieRamaService adminService;
 
 	private final String[] MOVIES = new String[] {};
 

@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.workable.movierama.api.dto.Movie;
 import com.workable.movierama.base.AbstractMovieRamaTest;
-import com.workable.movierama.service.MovieRamaAdminService;
+import com.workable.movierama.service.MovieRamaService;
 
 public class MovieRamaAdminServiceTests extends AbstractMovieRamaTest {
 
@@ -26,7 +26,7 @@ public class MovieRamaAdminServiceTests extends AbstractMovieRamaTest {
 	private RestTemplate restTemplate;
 
 	@Autowired
-	private MovieRamaAdminService adminService;
+	private MovieRamaService adminService;
 
 	@Value("${application.the-movie-db-api-key}")
 	private String theMovieDbApiKey;

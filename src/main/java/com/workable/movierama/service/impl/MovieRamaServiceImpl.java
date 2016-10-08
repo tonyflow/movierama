@@ -21,11 +21,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workable.movierama.api.MovieDbService;
 import com.workable.movierama.api.RottenTomatoesService;
 import com.workable.movierama.api.dto.Movie;
-import com.workable.movierama.service.MovieRamaAdminService;
+import com.workable.movierama.service.MovieRamaService;
 import com.workable.movierama.web.MovieRamaController;
 
 @Component
-public class MovieRamaAdminServiceImpl implements MovieRamaAdminService {
+public class MovieRamaServiceImpl implements MovieRamaService {
 
 	Logger LOGGER = LoggerFactory.getLogger(MovieRamaController.class);
 

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.workable.movierama.api.dto.Movie;
-import com.workable.movierama.service.MovieRamaAdminService;
+import com.workable.movierama.service.MovieRamaService;
 
 @RestController
 @RequestMapping(value = "/movies")
@@ -21,7 +21,7 @@ public class MovieRamaController {
 	Logger LOGGER = LoggerFactory.getLogger(MovieRamaController.class);
 
 	@Autowired
-	private MovieRamaAdminService adminService;
+	private MovieRamaService adminService;
 
 	@CrossOrigin(origins = "http://localhost")
 	@RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
