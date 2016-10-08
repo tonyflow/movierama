@@ -25,6 +25,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workable.movierama.api.dto.CompositeId;
 import com.workable.movierama.api.dto.Movie;
 
+/**
+ * Implements all MovieResourceService interface's method for extracting movie
+ * data via the MovieDB API.
+ * 
+ * @author niko.strongioglou
+ *
+ */
 @Component
 public class MovieDbService implements MovieResourceService {
 

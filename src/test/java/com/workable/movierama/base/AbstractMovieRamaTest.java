@@ -69,6 +69,7 @@ public class AbstractMovieRamaTest {
 
 				return movieDto != null && clazz.getDeclaredField("title").equals(title);
 			} catch (Exception e1) {
+				e1.printStackTrace();
 			}
 		}
 

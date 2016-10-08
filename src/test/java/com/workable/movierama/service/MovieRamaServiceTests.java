@@ -20,7 +20,7 @@ import com.workable.movierama.api.dto.Movie;
 import com.workable.movierama.base.AbstractMovieRamaTest;
 import com.workable.movierama.service.MovieRamaService;
 
-public class MovieRamaAdminServiceTests extends AbstractMovieRamaTest {
+public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 
 	@Autowired
 	private RestTemplate restTemplate;
