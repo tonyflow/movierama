@@ -16,7 +16,7 @@ import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
-import com.workable.movierama.api.dto.MovieDto;
+import com.workable.movierama.api.dto.Movie;
 import com.workable.movierama.base.AbstractMovieRamaTest;
 import com.workable.movierama.service.MovieRamaAdminService;
 
@@ -108,7 +108,7 @@ public class MovieRamaAdminServiceTests extends AbstractMovieRamaTest {
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess(mdbCreditsResponse, MediaType.APPLICATION_JSON_UTF8));
 
-		List<MovieDto> result = adminService.list("the godfather");
+		List<Movie> result = adminService.list("the godfather");
 
 		System.out.println(testMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
 
@@ -189,7 +189,7 @@ public class MovieRamaAdminServiceTests extends AbstractMovieRamaTest {
 
 		}
 
-		List<MovieDto> result = adminService.list("");
+		List<Movie> result = adminService.list("");
 
 		System.out.println(testMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
 

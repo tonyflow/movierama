@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class MovieDto implements Serializable {
+public class Movie implements Serializable {
 
 	private static final long serialVersionUID = -6620202295601783684L;
 
@@ -28,7 +28,7 @@ public class MovieDto implements Serializable {
 	private int productionYear;
 	private List<String> actors;
 
-	public MovieDto() {
+	public Movie() {
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class MovieDto implements Serializable {
 	 * @param numberOfReviews
 	 * @param actors
 	 */
-	public MovieDto(CompositeId compositeId, String title, String description,
+	public Movie(CompositeId compositeId, String title, String description,
 			Long numberOfReviews, int productionYear, List<String> actors) {
 		this.compositeId = compositeId;
 		this.title = title;
@@ -60,7 +60,7 @@ public class MovieDto implements Serializable {
 	 * @param numberOfReviews
 	 * @param actors
 	 */
-	public MovieDto(Long id, CompositeId compositeId, String name,
+	public Movie(Long id, CompositeId compositeId, String name,
 			String description, Long numberOfReviews, int productionYear,
 			List<String> actors) {
 

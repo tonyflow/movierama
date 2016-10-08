@@ -1,11 +1,11 @@
 spring:
-    datasource:
-        driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:5432/postgres
-        username: postgres
-        password: nikos8516
-    jpa:
-        database-platform: org.hibernate.dialect.PostgreSQLDialect
+    #datasource:
+    #    driver-class-name: org.postgresql.Driver
+    #    url: jdbc:postgresql://localhost:5432/postgres
+    #    username: postgres
+    #    password: nikos8516
+    #jpa:
+    #    database-platform: org.hibernate.dialect.PostgreSQLDialect
     jackson:
         serialization:
             FAIL_ON_EMPTY_BEANS: false

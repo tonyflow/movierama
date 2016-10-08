@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.workable.movierama.api.dto.MovieDto;
+import com.workable.movierama.api.dto.Movie;
 import com.workable.movierama.service.MovieRamaAdminService;
 
 @RestController
@@ -25,7 +25,7 @@ public class MovieRamaController {
 
 	@CrossOrigin(origins = "http://localhost")
 	@RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public Iterable<MovieDto> list(
+	public Iterable<Movie> list(
 			@RequestParam(value = "title", required = false) String title) {
 
 		if (StringUtils.isNotBlank(title)) {

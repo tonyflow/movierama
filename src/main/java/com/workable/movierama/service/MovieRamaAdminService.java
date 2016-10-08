@@ -2,11 +2,11 @@ package com.workable.movierama.service;
 
 import java.util.List;
 
-import com.workable.movierama.api.dto.MovieDto;
+import com.workable.movierama.api.dto.Movie;
 
 public interface MovieRamaAdminService {
 
-	List<MovieDto> list(String title);
+	List<Movie> list(String title);
 
 
 }

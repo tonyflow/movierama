@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootApplication
 @EnableCaching
-@ComponentScan(basePackages = { "org.workable.movierama" })
+@ComponentScan(basePackages = { "com.workable.movierama" })
 public class MovieRamaApplication extends SpringServletContainerInitializer {
 
 	public static void main(String[] args) {
