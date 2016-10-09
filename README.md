@@ -16,6 +16,6 @@ Copy the files to your local Apache directory and you are ready to go. Using the
 
 The following is a class diagram of the application depicting mainly the services and resource important DTOs MovieRama handles.
 
-![alt text](https://bytebucket.org/niko_strongioglou/movierama/raw/da7e42eadd3152b4eb14a9c04222f9f67a4cb8d9/movierama-class-diagram.png?token=aad2c670ac02cd268944a95f30c2a47968cfec95)
+![alt text](https://bytebucket.org/niko_strongioglou/movierama/raw/b29edf9eeb6c561bdd776d2d906a5ea317008bcb/movierama-class-diagram.png?token=f43932d1b87f6931c9e5276c94b7c3e90375aeec)
 
 
