@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -31,6 +33,8 @@ import com.workable.movierama.api.dto.Movie;
  */
 @Component
 public class RottenTomatoesService implements MovieResourceService {
+
+	Logger LOGGER = LoggerFactory.getLogger(RottenTomatoesService.class);
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -68,7 +72,7 @@ public class RottenTomatoesService implements MovieResourceService {
 
 			}
 		} catch (Exception e) {
-
+			LOGGER.error("Error while");
 		}
 
 		return movies;
@@ -98,8 +102,8 @@ public class RottenTomatoesService implements MovieResourceService {
 				}
 			}
 
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			LOGGER.error("Error while building Rotten tomatoes response for movie " + title, e);
 		}
 
 		return null;
@@ -114,7 +118,7 @@ public class RottenTomatoesService implements MovieResourceService {
 	 * @throws IOException
 	 * @throws JsonProcessingException
 	 */
-	private void retrieveRTReviewsAndBuild(Map<String, Movie> movies, JsonNode movie) throws IOException, JsonProcessingException {
+	private void retrieveRTReviewsAndBuild(Map<String, Movie> movies, JsonNode movie) throws Exception {
 		String rtmReviews = restTemplate.getForObject(ROTTEN_TOMATOES_REVIEWS_URL,
 				String.class,
 				movie.get("id").asText(),

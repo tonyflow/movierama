@@ -1,6 +1,5 @@
 package com.workable.movierama.service.impl;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -11,13 +10,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workable.movierama.api.MovieDbService;
 import com.workable.movierama.api.RottenTomatoesService;
 import com.workable.movierama.api.dto.Movie;
@@ -34,24 +30,6 @@ public class MovieRamaServiceImpl implements MovieRamaService {
 
 	@Autowired
 	private MovieDbService movieDbService;
-
-	// ---------------------------------------------
-
-	@Autowired
-	private RestTemplate restTemplate;
-
-	@Autowired
-	private ObjectMapper mapper;
-
-	@Value("${application.the-movie-db-api-key}")
-	private String theMovieDbApiKey;
-
-	@Value("${application.rotter-tomatoes-api-key}")
-	private String rottenTomatoesApiKey;
-
-	private final Integer PAGING = 1;
-
-	private final String LANGUAGE = "en-US";
 
 	@Cacheable(value = "moviesCache", sync = true)
 	public List<Movie> list(String title) {
@@ -81,26 +59,25 @@ public class MovieRamaServiceImpl implements MovieRamaService {
 	private List<Movie> getMovie(String title) {
 
 		Movie rtMovieResponse = rottenTomatoesService.getMovie(title);
-
 		Movie mdbMovieResponse = movieDbService.getMovie(title);
+
+		Map<String, Movie> rtMap = new HashMap<String, Movie>();
+		Map<String, Movie> mdbMap = new HashMap<String, Movie>();
 
 		if (rtMovieResponse != null && mdbMovieResponse != null) {
 
-			Map<String, Movie> rtMap = new HashMap<String, Movie>();
 			rtMap.put(title.toLowerCase(), rtMovieResponse);
-			Map<String, Movie> mdbMap = new HashMap<String, Movie>();
 			mdbMap.put(title.toLowerCase(), mdbMovieResponse);
 
-			Map<String, Movie> movies = merge(rtMap, mdbMap);
-
-			return movies.values().stream().collect(Collectors.toList());
 		} else if (rtMovieResponse != null) {
-			return Arrays.asList(rtMovieResponse);
+			rtMap.put(title.toLowerCase(), rtMovieResponse);
 		} else if (mdbMovieResponse != null) {
-			return Arrays.asList(mdbMovieResponse);
+			mdbMap.put(title.toLowerCase(), mdbMovieResponse);
 		} else {
 			return Collections.<Movie> emptyList();
 		}
+
+		return merge(rtMap, mdbMap).values().stream().collect(Collectors.toList());
 
 	}
 

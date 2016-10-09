@@ -50,7 +50,7 @@ public class MovieRamaController {
 
 		for (char c : ca) {
 			if (ILLEGAL_CHARS.indexOf(c) > 0) {
-				throw new TitleValidationException("");
+				throw new TitleValidationException("Movie title cannpt contain the following special characters.");
 			}
 		}
 	}
@@ -60,9 +60,15 @@ public class MovieRamaController {
 
 	}
 
-	@ExceptionHandler(TitleValidationException.class)
-	public void validationHandler() {
+	@ExceptionHandler(RuntimeException.class)
+	public String handleError() {
+		return "Something unexpected happended. Probalby due to parsing of movie"
+				+ " resource APIs or actual contact with the APIs";
+	}
 
+	@ExceptionHandler(TitleValidationException.class)
+	public String validationHandler() {
+		return "Movie title cannot contain the following special characters.";
 	}
 
 }

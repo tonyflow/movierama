@@ -1,31 +1,41 @@
 package com.workable.movierama.service;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.test.web.client.match.MockRestRequestMatchers;
-import org.springframework.test.web.client.response.MockRestResponseCreators;
-import org.springframework.web.client.RestTemplate;
 
+import com.workable.movierama.api.MovieDbService;
+import com.workable.movierama.api.RottenTomatoesService;
+import com.workable.movierama.api.dto.CompositeId;
 import com.workable.movierama.api.dto.Movie;
 import com.workable.movierama.base.AbstractMovieRamaTest;
-import com.workable.movierama.service.MovieRamaService;
 
 public class MovieRamaServiceTests extends AbstractMovieRamaTest {
+	//
+	// @Autowired
+	// private RestTemplate restTemplate;
+
+	@MockBean
+	private RottenTomatoesService mockRottenTomatoesService;
+
+	@MockBean
+	private MovieDbService mockMovieDbService;
 
 	@Autowired
-	private RestTemplate restTemplate;
-
-	@Autowired
+	@InjectMocks
 	private MovieRamaService adminService;
 
 	@Value("${application.the-movie-db-api-key}")
@@ -38,8 +48,6 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 
 	private final String[] MDB_MOVIES = new String[] { "333484" };
 
-	private final String[] RTM_MOVIES = new String[] { "771359360", "771407527" };
-
 	private final String[] ACTORS = new String[] { "Marlon Brando", "Al Pacino",
 			"James Caan", "Richard S. Castellano",
 			"Robert Duvall" };
@@ -47,155 +55,252 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 	@Before
 	public void setup() throws Exception {
 		super.setup();
-		mockServer = MockRestServiceServer.createServer(restTemplate);
+
+		MockitoAnnotations.initMocks(getClass());
+
+		// mockServer = MockRestServiceServer.createServer(restTemplate);
 	}
 
 	/**
-	 * Testing functionality when a movie title is provided. Http response
-	 * should provide a list of one page of size including titles whose name
-	 * matches the most the query term.
+	 * Test which combines data from both APIs to produce a getMovie response.
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void testListMovie() throws Exception {
+	public void testListMovieNormal() throws Exception {
 
-		// ROTTEN TOMATOES
-		// --- Mock Search ----------
-		String rtmSearchResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/rotten-tomatoes-search.json"));
+		// --Mock RT Response
+		Movie rtMovieStub = new Movie(new CompositeId(123l
+				, null),
+				"The Godfather",
+				"this is a very small description",
+				20l,
+				1972,
+				Arrays.asList("Marlon Brando", "Al Pacino",
+						"James Caan", "Richard S. Castellano",
+						"Robert Duvall"));
 
-		mockServer.expect(MockRestRequestMatchers.requestTo("http://api.rottentomatoes.com/api/public/v1.0/movies.json?"
-				+ "apikey=" + rottenTomatoesApiKey + "&"
-				+ "q=the%20godfather&"
-				+ "page_limit=1"))
-				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess(rtmSearchResponse, MediaType.APPLICATION_JSON_UTF8));
+		Mockito.stub(mockRottenTomatoesService.getMovie(Mockito.eq("the godfather")))
+				.toReturn(rtMovieStub);
 
-		// --- Mock Reviews ----------
-		String rtmReviewsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/rotten-tomatoes-reviews.json"));
+		// --Mock MDb Response
+		Movie mdbMovieStub = new Movie(new CompositeId(null
+				, 345l),
+				"The Godfather",
+				"this is obviously a larger description",
+				1l,
+				1972,
+				null);
 
-		mockServer.expect(MockRestRequestMatchers.requestTo("http://api.rottentomatoes.com/api/public/v1.0/movies/12911/reviews.json?"
-				+ "apikey=" + rottenTomatoesApiKey))
-				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess(rtmReviewsResponse, MediaType.APPLICATION_JSON_UTF8));
-
-		// MOVIE DB mocks
-		// --- Mock Search ----------
-		String mdbSearchResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-search.json"));
-
-		mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/search/movie?"
-				+ "page=1&"
-				+ "query=the%20godfather&"
-				+ "language=en-US&"
-				+ "api_key=" + theMovieDbApiKey))
-				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess(mdbSearchResponse, MediaType.APPLICATION_JSON_UTF8));
-
-		String mdbReviewsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-reviews.json"));
-
-		// --- Mock Reviews ----------
-		mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/movie/238/reviews?"
-				+ "api_key=" + theMovieDbApiKey + "&"
-				+ "language=en-US"))
-				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess(mdbReviewsResponse, MediaType.APPLICATION_JSON_UTF8));
-
-		// -- Mock Credits ----------
-		String mdbCreditsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-credits.json"));
-
-		mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/movie/238/credits?"
-				+ "api_key=" + theMovieDbApiKey))
-				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess(mdbCreditsResponse, MediaType.APPLICATION_JSON_UTF8));
+		Mockito.stub(mockMovieDbService.getMovie(Mockito.eq("the godfather")))
+				.toReturn(mdbMovieStub);
 
 		List<Movie> result = adminService.list("the godfather");
 
 		System.out.println(testMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
 
 		Assert.assertEquals("The Godfather", result.get(0).getTitle());
-		Assert.assertEquals("The story spans the years from 1945 to 1955 and chronicles the fictional"
-				+ " Italian-American Corleone crime family. When organized crime family patriarch "
-				+ "Vito Corleone barely survives an attempt on his life, his youngest son, Michael,"
-				+ " steps in to take care of the would-be killers, launching a campaign of bloody "
-				+ "revenge.",
+		Assert.assertEquals("this is obviously a larger description",
 				result.get(0).getDescription());
 		Assert.assertEquals(1972, result.get(0).getProductionYear());
 		Assert.assertEquals(Long.valueOf(21), result.get(0).getNumberOfReviews());
+
 		for (String actor : result.get(0).getActors()) {
 			Assert.assertThat(actor, Matchers.isOneOf(ACTORS));
 		}
 
 		Assert.assertTrue(isCached("the godfather"));
+
 	}
 
 	/**
-	 * Testing results of the list service when no movie title is provided.
-	 * Service should provide a list of movies playing now on theaters.
+	 * Testing algorithms behavior on empty response from Movie Db API.
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void testListLatest() throws Exception {
+	public void testListMovieEmptyMDbResponse() throws Exception {
 
-		// ROTTEN TOMATOES mocks
-		// -- Mock Now Playing -----------
-		String rtmNowPlayingResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/rotten-tomatoes-now-playing.json"));
-		mockServer.expect(MockRestRequestMatchers.requestTo("http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?"
-				+ "apikey=" + rottenTomatoesApiKey + "&"
-				+ "page_limit=20"))
-				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess(rtmNowPlayingResponse, MediaType.APPLICATION_JSON_UTF8));
+		// --Mock RT Response
+		Movie rtMovieStub = new Movie(new CompositeId(123l
+				, null),
+				"The Godfather",
+				"this is a very small description",
+				20l,
+				1972,
+				Arrays.asList("Marlon Brando", "Al Pacino",
+						"James Caan", "Richard S. Castellano",
+						"Robert Duvall"));
 
-		String rtmReviewsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/rotten-tomatoes-reviews.json"));
+		Mockito.stub(mockRottenTomatoesService.getMovie(Mockito.eq("the godfather")))
+				.toReturn(rtMovieStub);
 
-		for (String movieId : RTM_MOVIES) {
-			mockServer.expect(MockRestRequestMatchers.requestTo("http://api.rottentomatoes.com/api/public/v1.0/movies/" + movieId + "/reviews.json?"
-					+ "apikey=" + rottenTomatoesApiKey))
-					.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-					.andRespond(MockRestResponseCreators.withSuccess(rtmReviewsResponse, MediaType.APPLICATION_JSON_UTF8));
+		Mockito.stub(mockMovieDbService.getMovie(Mockito.eq("the godfather")))
+				.toReturn(null);
 
+		List<Movie> result = adminService.list("the godfather");
+
+		Assert.assertEquals("The Godfather", result.get(0).getTitle());
+		Assert.assertEquals("this is a very small description",
+				result.get(0).getDescription());
+		Assert.assertEquals(1972, result.get(0).getProductionYear());
+		Assert.assertEquals(Long.valueOf(20), result.get(0).getNumberOfReviews());
+
+		for (String actor : result.get(0).getActors()) {
+			Assert.assertThat(actor, Matchers.isOneOf(ACTORS));
 		}
 
-		// MOVIE DB mocks
-		// -- Mock Now Playing -----------
-		String mdbNowPlayingResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-now-playing.json"));
+	}
 
-		mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/movie/now_playing?"
-				+ "api_key=" + theMovieDbApiKey + "&"
-				+ "language=en-US"))
-				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess(mdbNowPlayingResponse, MediaType.APPLICATION_JSON_UTF8));
+	/**
+	 * Testing algorithms behavior on empty response from Rotten Tomatoes API.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testListMovieEmptyRTResponse() throws Exception {
 
-		String mdbReviewsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-reviews.json"));
+		// --Mock RT Response
 
-		// --Mock Review For Each Movie
-		for (String movieId : MDB_MOVIES) {
-			mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/movie/" + movieId + "/reviews?"
-					+ "api_key=" + theMovieDbApiKey + "&"
-					+ "language=en-US"))
-					.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-					.andRespond(MockRestResponseCreators.withSuccess(mdbReviewsResponse, MediaType.APPLICATION_JSON_UTF8));
+		Mockito.stub(mockRottenTomatoesService.getMovie(Mockito.eq("the godfather")))
+				.toReturn(null);
 
+		// --Mock MDb Response
+		Movie mdbMovieStub = new Movie(new CompositeId(null
+				, 345l),
+				"The Godfather",
+				"this is obviously a larger description",
+				1l,
+				1972,
+				null);
+
+		Mockito.stub(mockMovieDbService.getMovie(Mockito.eq("the godfather")))
+				.toReturn(mdbMovieStub);
+
+		List<Movie> result = adminService.list("the godfather");
+
+		Assert.assertEquals("The Godfather", result.get(0).getTitle());
+		Assert.assertEquals("this is obviously a larger description",
+				result.get(0).getDescription());
+		Assert.assertEquals(1972, result.get(0).getProductionYear());
+		Assert.assertEquals(Long.valueOf(1), result.get(0).getNumberOfReviews());
+
+		for (String actor : result.get(0).getActors()) {
+			Assert.assertThat(actor, Matchers.isOneOf(ACTORS));
 		}
 
-		// -- Mock Cast For Each Movie
-		String mdbCreditsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-credits.json"));
+	}
 
-		for (String movieId : MDB_MOVIES) {
-			mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/movie/" + movieId + "/credits?"
-					+ "api_key=" + theMovieDbApiKey))
-					.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-					.andRespond(MockRestResponseCreators.withSuccess(mdbCreditsResponse, MediaType.APPLICATION_JSON_UTF8));
+	/**
+	 * Returning an empty list when movie was not found on neither Movie Db nor
+	 * Rotten Tomatoes. Remember that algorithm uses exact string matching and
+	 * not approximate.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testListMovieNotFound() throws Exception {
 
-		}
+		// --Mock RT Response
+		Mockito.stub(mockRottenTomatoesService.getMovie(Mockito.eq("the godfather")))
+				.toReturn(null);
+
+		// --Mock MDb Response
+		Mockito.stub(mockMovieDbService.getMovie(Mockito.eq("the godfather")))
+				.toReturn(null);
+
+		List<Movie> result = adminService.list("the godfather");
+
+		Assert.assertTrue(result.isEmpty());
+
+	}
+
+	/**
+	 * Test which combines data from both APIs to produce a list latest movies
+	 * in theaters response.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testListLatestNormal() throws Exception {
+
+		// --Mock RT Response
+		Map<String, Movie> rtLatestStub = new HashMap<String, Movie>();
+		rtLatestStub.put("the magnificent seven", new Movie(new CompositeId(234l,
+				null),
+				"The Magnificent Seven",
+				"smallig",
+				2l,
+				2016,
+				Arrays.asList("Denzel Washington", "Chris Pratt",
+						"Ethan Hawke", "Vincent D'Onofrio",
+						"Lee Byung-hun")));
+
+		rtLatestStub.put("miss pelegrine's home for peculiar children", new Movie(new CompositeId(1234l,
+				null),
+				"Miss Peregrine's Home for Peculiar Children",
+				"miss pelegrine description",
+				2l,
+				2016,
+				Arrays.asList("Eva Green", "Asa Butterfield",
+						"Chris O'Dowd", "Allison Janney",
+						"Rupert Everett")));
+
+		Mockito.stub(mockRottenTomatoesService.listLatestMovies())
+				.toReturn(rtLatestStub);
+
+		// --Mock MDb Response
+		Map<String, Movie> mdbLatestStub = new HashMap<String, Movie>();
+		mdbLatestStub.put("the magnificent seven", new Movie(new CompositeId(null,
+				123l),
+				"The Magnificent Seven",
+				"small",
+				99l,
+				2016,
+				null));
+
+		Mockito.stub(mockMovieDbService.listLatestMovies())
+				.toReturn(mdbLatestStub);
 
 		List<Movie> result = adminService.list("");
 
 		System.out.println(testMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
 
-		String expected = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/assert-now-playing.json"));
+		Assert.assertEquals("Miss Peregrine's Home for Peculiar Children", result.get(0).getTitle());
+		Assert.assertEquals("miss pelegrine description", result.get(0).getDescription());
+		Assert.assertEquals(Long.valueOf(2), result.get(0).getNumberOfReviews());
+		Assert.assertEquals(2016, result.get(0).getProductionYear());
 
-		Assert.assertEquals(expected, testMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
+		for (String actor : result.get(0).getActors()) {
+			Assert.assertThat(actor, Matchers.isOneOf("Eva Green", "Asa Butterfield",
+					"Chris O'Dowd", "Allison Janney",
+					"Rupert Everett"));
+
+		}
+
+		Assert.assertEquals("The Magnificent Seven", result.get(1).getTitle());
+		Assert.assertEquals("smallig", result.get(1).getDescription());
+		Assert.assertEquals(Long.valueOf(101), result.get(1).getNumberOfReviews());
+		Assert.assertEquals(2016, result.get(1).getProductionYear());
+
+		for (String actor : result.get(1).getActors()) {
+			Assert.assertThat(actor, Matchers.isOneOf("Denzel Washington", "Chris Pratt",
+					"Ethan Hawke", "Vincent D'Onofrio",
+					"Lee Byung-hun"));
+		}
 
 	}
+
+	// TODO Is there any use in implementing these two test cases? I mean, there
+	// is no chance of an API return empty results when queried for the latest
+	// movies.
+	@Test
+	public void testListLatestEmptyMDbResponse() throws Exception {
+	}
+
+	@Test
+	public void testListLatestEmptyRTResponse() throws Exception {
+
+	}
+
 }

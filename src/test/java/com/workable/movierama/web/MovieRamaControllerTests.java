@@ -1,18 +1,23 @@
 package com.workable.movierama.web;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -22,7 +27,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.workable.movierama.api.dto.Movie;
 import com.workable.movierama.base.AbstractMovieRamaTest;
 import com.workable.movierama.service.MovieRamaService;
-import com.workable.movierama.web.MovieRamaController;
 
 @WebAppConfiguration
 public class MovieRamaControllerTests extends AbstractMovieRamaTest {
@@ -36,7 +40,7 @@ public class MovieRamaControllerTests extends AbstractMovieRamaTest {
 	@InjectMocks
 	private MovieRamaController controller;
 
-	@Mock
+	@MockBean
 	private MovieRamaService mockMovieRamaAdminService;
 
 	@Before
@@ -60,17 +64,23 @@ public class MovieRamaControllerTests extends AbstractMovieRamaTest {
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/movies/list")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
-				.param("title", "godfather"))
+				.param("title", "the godfather"))
 				.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)));
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$", Matchers.hasSize(1)))
+				.andExpect(jsonPath("$[0].title", Matchers.equalTo("the godfather")))
+				.andExpect(jsonPath("$[0].description", Matchers.equalTo("the coolest movie")))
+				.andExpect(jsonPath("$[0].numberOfReviews", Matchers.equalTo(123)))
+				.andExpect(jsonPath("$[0].productionYear", Matchers.equalTo(1972)))
+				.andExpect(jsonPath("$[0].actors[0]", Matchers.equalTo("Marlon Brando")))
+				.andExpect(jsonPath("$[0].actors[1]", Matchers.equalTo("Al Pacino")));
 
 	}
 
 	@Test
 	public void testEmptyList() throws Exception {
 
-		Mockito.stub(mockMovieRamaAdminService.list(Mockito.eq("the godfather")))
+		Mockito.stub(mockMovieRamaAdminService.list(Mockito.eq("no movie to show")))
 				.toReturn(Collections.<Movie> emptyList());
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/movies/list")
@@ -85,30 +95,32 @@ public class MovieRamaControllerTests extends AbstractMovieRamaTest {
 	@Test
 	public void testException() throws Exception {
 
-		Mockito.stub(mockMovieRamaAdminService.list(Mockito.eq("the godfather")))
-				.toThrow(new Exception("Something bad happened here"));
+		Mockito.stub(mockMovieRamaAdminService.list(Mockito.eq("bad movie")))
+				.toThrow(new RuntimeException("Something bad happened here"));
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/movies/list")
+		MvcResult httpResponse = mockMvc.perform(MockMvcRequestBuilders.get("/movies/list")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
-				.param("title", "no movie to show"))
+				.param("title", "bad movie"))
 				.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(0)));
+				.andReturn();
+
+		Assert.assertEquals("Something unexpected happended. Probalby due to parsing of movie resource APIs or actual contact with the APIs", httpResponse
+				.getResponse().getContentAsString());
 
 	}
 
 	@Test
 	public void testValidationError() throws Exception {
 
-		Mockito.stub(mockMovieRamaAdminService.list(Mockito.eq("the godfather")))
-				.toReturn(Collections.<Movie> emptyList());
-
-		mockMvc.perform(MockMvcRequestBuilders.get("/movies/list")
+		MvcResult httpResponse = mockMvc.perform(MockMvcRequestBuilders.get("/movies/list")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
-				.param("title", "<>?{}|\\@#$%^&*-_+"))
+				.param("title", "the godfather^"))
 				.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(0)));
+				.andReturn();
+
+		Assert.assertEquals("Movie title cannot contain the following special characters.", httpResponse
+				.getResponse().getContentAsString());
 
 	}
 }
