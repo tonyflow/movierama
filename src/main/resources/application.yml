@@ -10,4 +10,4 @@ spring:
 application:
     rotter-tomatoes-api-key: qtqep7qydngcc7grk4r4hyd9
     the-movie-db-api-key: 186b266209c2da50f898b7977e2a44dd
-    
+    movie-resources: rottenTomatoes,movieDb    
