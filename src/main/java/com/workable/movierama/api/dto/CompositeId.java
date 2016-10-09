@@ -35,4 +35,9 @@ public class CompositeId implements Serializable {
 		this.movieDbId = movieDbId;
 	}
 
+	@Override
+	public String toString() {
+		return "CompositeId [rottenTomatoesId=" + rottenTomatoesId + ", movieDbId=" + movieDbId + "]";
+	}
+
 }

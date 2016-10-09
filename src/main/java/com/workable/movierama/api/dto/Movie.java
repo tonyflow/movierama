@@ -1,7 +1,6 @@
 package com.workable.movierama.api.dto;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,7 +24,7 @@ public class Movie implements Serializable {
 	private String title;
 	private String description;
 	private Long numberOfReviews;
-	private int productionYear;
+	private Integer productionYear;
 	private List<String> actors;
 
 	public Movie() {
@@ -135,9 +134,8 @@ public class Movie implements Serializable {
 
 	@Override
 	public String toString() {
-		return "MovieDto [id=" + id + ", name=" + title + ", description="
-				+ description + ", numberOfReviews=" + numberOfReviews
-				+ ", actors=" + actors + "]";
+		return "Movie [id=" + id + ", compositeId=" + compositeId + ", title=" + title + ", description=" + description + ", numberOfReviews="
+				+ numberOfReviews + ", productionYear=" + productionYear + ", actors=" + actors + "]";
 	}
 
 }
