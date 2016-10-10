@@ -1,6 +1,6 @@
 #### MovieRama
 
-The back end implementation of MovieRama is a Spring Boot application which uses Maven for managing its build lifecycle. `mvn clean install`  
+The backend implementation of MovieRama is a Spring Boot application which uses Maven for managing its build lifecycle. `mvn clean install`  
 will provide you with a `war` package which you can deploy on a local Tomcat or you can run the application from your IDE of your choice. 
 Personally, I tested MovieRama through Eclipse's embedded Tomcat.
 
@@ -10,7 +10,7 @@ The merge algorithm which hitherto selects the longest of descriptions and sums 
 
 **title**: `RottenTomatoesService` is initially assigned the task of populating that field. If there was no result then the task will be delegated to the `MovieDbService`
 
-**description**: The longest of the two retrieved descriptions will be displayed in our front end.
+**description**: The longest of the two retrieved descriptions will be displayed in our frontend.
 
 **numberOfReviews**: The accumulative number of reviews retrieved from both APIs  
 
@@ -22,8 +22,8 @@ The application caches its queries to an EhCache implementation for a week (*tim
 
 Application's log level has been set to INFO. Nevertheless, it is configurable through the `application.yml` property `logging.level.root`.
 
-As far as the front end is concerned, you may find the required files under `/front` folder in the root of the repository.
-Copy the files to your local Apache directory and you are ready to go. Using the front end , the user must specify the exact name of the movie one wants to search or press the _Latest_ button and retrieve all latest movies in theaters. There is no approximate string matching (fuzzy search) results for MovieRama.
+As far as the frontend is concerned, you may find the required files under `/front` folder in the root of the repository.
+Copy the files to your local Apache directory and you are ready to go. Using the frontend , the user must specify the exact name of the movie one wants to search or press the _Latest_ button and retrieve all latest movies in theaters. There is no approximate string matching (fuzzy search) results for MovieRama.
 
 
 The following is a class diagram of the application depicting mainly the services' architecture.
