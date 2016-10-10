@@ -6,7 +6,8 @@ import com.workable.movierama.api.dto.Movie;
 
 public interface MovieRamaService {
 
-	List<Movie> list(String title);
+	Movie search(String title);
 
+	List<Movie> latest();
 
 }
