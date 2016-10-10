@@ -23,7 +23,7 @@ The application caches its queries to an EhCache implementation for a week (*tim
 Application's log level has been set to INFO. Nevertheless, it is configurable through the `application.yml` property `logging.level.root`.
 
 As far as the frontend is concerned, you may find the required files under `/front` folder in the root of the repository.
-Copy the files to your local Apache directory and you are ready to go. Using the frontend , the user must specify the exact name of the movie one wants to search or press the _Latest_ button and retrieve all latest movies in theaters. There is no approximate string matching (fuzzy search) results for MovieRama.
+Copy the files to your local Apache directory and you are ready to go. Using the frontend , the user must specify the exact name of the movie one wants to search or press the _Latest_ button and retrieve all latest movies in theaters. There is no approximate string matching (fuzzy search) results for MovieRama. There is not "loading" results indication so please give it a few seconds until the results are present.
 
 
 The following is a class diagram of the application depicting mainly the services' architecture.
