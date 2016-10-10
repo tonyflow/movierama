@@ -14,7 +14,7 @@ The merge algorithm which hitherto selects the longest of descriptions and sums 
 
 **numberOfReviews**: The accumulative number of reviews retrieved from both APIs  
 
-**ProductionYear**: `RottenTomatoesService` is initially assigned the task of populating that field. If there was no result then the task will be delegated to the `MovieDbService`
+**productionYear**: `RottenTomatoesService` is initially assigned the task of populating that field. If there was no result then the task will be delegated to the `MovieDbService`
 
 **Actors**: The MovieDb API is not used for querying cast due to rate limitations on its use (Movie search API does not include cast in its response and must query cast for EACH movie included in the response list). Rotten tomatoes is used instead and actors list is populated from SEARCH and NOW_PLAYING *abridged cast* property.
 
