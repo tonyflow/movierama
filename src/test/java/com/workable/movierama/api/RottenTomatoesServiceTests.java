@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.workable.movierama.api.dto.Movie;
@@ -41,6 +40,11 @@ public class RottenTomatoesServiceTests extends AbstractMovieRamaTest {
 		mockServer = MockRestServiceServer.createServer(restTemplate);
 	}
 
+	/**
+	 * Testing happy path.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testGetMovieNormal() throws Exception {
 
@@ -77,6 +81,14 @@ public class RottenTomatoesServiceTests extends AbstractMovieRamaTest {
 		}
 	}
 
+	/**
+	 * In case Rotten Tomatoes Search API produces an {@code Exception},
+	 * getMovie(title) must still return a null value so that the merge
+	 * algorithm can continue its flow properly. Maybe another movie resource
+	 * can produce a valid response.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testGetMovieException() throws Exception {
 
@@ -96,6 +108,14 @@ public class RottenTomatoesServiceTests extends AbstractMovieRamaTest {
 
 	}
 
+	/**
+	 * In case Rotten Tomatoes Reviews API produces an {@code Exception},
+	 * getMovie(title) must still return a concrete movie value so that the
+	 * merge algorithm can continue its flow properly. The effect of such an
+	 * error will be a movies' map entry with 0 movie reviews.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testGetMovieReviewsException() throws Exception {
 
@@ -130,6 +150,11 @@ public class RottenTomatoesServiceTests extends AbstractMovieRamaTest {
 		}
 	}
 
+	/**
+	 * Happy path.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testLatestNormal() throws Exception {
 
@@ -186,12 +211,15 @@ public class RottenTomatoesServiceTests extends AbstractMovieRamaTest {
 	}
 
 	/**
-	 * If not response from either of the two APIs is produced then the flow is
-	 * not going to continue.
+	 * 
+	 * In case Rotten Tomatoes Now Playing API produces an {@code Exception},
+	 * listLatest() must still return an empty map value so that the merge
+	 * algorithm can continue its flow properly. Maybe another movie resource
+	 * can produce a valid response.
 	 * 
 	 * @throws Exception
 	 */
-	@Test(expected = HttpClientErrorException.class)
+	@Test
 	public void testLatestException() throws Exception {
 
 		// ROTTEN TOMATOES mocks
@@ -203,7 +231,9 @@ public class RottenTomatoesServiceTests extends AbstractMovieRamaTest {
 				.andRespond(MockRestResponseCreators.withBadRequest());
 
 		// -- Actual Service Invocation
-		rottenTomatoesService.listLatestMovies();
+		Map<String, Movie> movies = rottenTomatoesService.listLatestMovies();
+
+		Assert.assertTrue(movies.isEmpty());
 
 	}
 

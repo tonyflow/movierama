@@ -10,6 +10,13 @@ import com.workable.movierama.api.MovieResourceService;
 import com.workable.movierama.api.RottenTomatoesService;
 import com.workable.movierama.base.AbstractMovieRamaTest;
 
+/**
+ * This is a test suite for verifying the appropriate initialization of our
+ * {@code MovieResourceFactory}.
+ * 
+ * @author niko.strongioglou
+ *
+ */
 public class MovieResourceFactoryTests extends AbstractMovieRamaTest {
 
 	@Autowired

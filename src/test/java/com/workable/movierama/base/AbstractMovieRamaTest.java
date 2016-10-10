@@ -14,8 +14,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workable.movierama.MovieRamaApplication;
+import com.workable.movierama.service.MovieRamaServiceTests;
 import com.workable.movierama.support.EhCacheUtils;
 
+/**
+ * This is the base class for our tests. Test application context is defined
+ * here as well as setup and tear down methods to be ran before and after each
+ * one of our tests. Initialization methods concentrate mainly on the eviction
+ * of all cache elements so as for the test suites to start anew.
+ * 
+ * @author niko.strongioglou
+ *
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { MovieRamaApplication.class },
 		webEnvironment = WebEnvironment.MOCK)
@@ -41,7 +51,8 @@ public abstract class AbstractMovieRamaTest {
 	}
 
 	/**
-	 * Was our movie actually put in cache.
+	 * Was our movie actually put in cache. Used at
+	 * {@link MovieRamaServiceTests}.
 	 * 
 	 * @return
 	 */

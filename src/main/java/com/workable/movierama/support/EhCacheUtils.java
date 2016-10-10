@@ -20,10 +20,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CommonsLogWriter;
 
 /**
- * Utility for EhCache
- *
- * @author n.kazarian
- *
+ * Methods used by the {@code EhCacheController}.
+ * 
+ * @author niko.strongioglou
  */
 public abstract class EhCacheUtils {
 	private static final Log log = LogFactory.getLog(EhCacheUtils.class);

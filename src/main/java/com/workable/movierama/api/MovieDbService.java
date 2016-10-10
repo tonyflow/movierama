@@ -1,10 +1,5 @@
 package com.workable.movierama.api;
 
-import static com.workable.movierama.api.UrlConstants.MOVIE_DB_CREDITS_URL;
-import static com.workable.movierama.api.UrlConstants.MOVIE_DB_LATEST_URL;
-import static com.workable.movierama.api.UrlConstants.MOVIE_DB_REVIEWS_URL;
-import static com.workable.movierama.api.UrlConstants.MOVIE_DB_SEARCH_URL;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,8 +21,12 @@ import com.workable.movierama.api.dto.CompositeId;
 import com.workable.movierama.api.dto.Movie;
 
 /**
- * Implements all MovieResourceService interface's method for extracting movie
- * data via the MovieDB API.
+ * Implements all {@code MovieResourceService} interface's methods for
+ * extracting movie data via the MovieDb API. listLatestMovies, getMovie and
+ * retrieveMDReviewsAndBuild methods are all fault tolerant to any unexpected
+ * exceptions produced by the Movie Db API (e.g. server unavailability). The
+ * data retrieval flow trusts that at least one of the configured data sources
+ * or the cache will produce results.
  * 
  * @author niko.strongioglou
  *
@@ -52,6 +51,23 @@ public class MovieDbService implements MovieResourceService {
 
 	private final String LANGUAGE = "en-US";
 
+	public static String MOVIE_DB_SEARCH_URL = "https://api.themoviedb.org/3/search/movie?"
+			+ "page={page}&"
+			+ "query={title}&"
+			+ "language={language}&"
+			+ "api_key={api_key}";
+
+	public static String MOVIE_DB_LATEST_URL = "https://api.themoviedb.org/3/movie/now_playing?"
+			+ "api_key={api_key}&"
+			+ "language={language}";
+
+	public static String MOVIE_DB_REVIEWS_URL = "https://api.themoviedb.org/3/movie/{movie_id}/reviews?"
+			+ "api_key={api_key}&"
+			+ "language={language}";
+
+	public static String MOVIE_DB_CREDITS_URL = "https://api.themoviedb.org/3/movie/{movie_id}/credits?"
+			+ "api_key={api_key}";
+
 	@Override
 	public String getResourceName() {
 
@@ -61,14 +77,16 @@ public class MovieDbService implements MovieResourceService {
 	@Override
 	public Map<String, Movie> listLatestMovies() {
 
+		LOGGER.debug("Retrieving latest movies from Movie Db");
+
 		Map<String, Movie> movies = new HashMap<String, Movie>();
 
-		String mdb = restTemplate.getForObject(MOVIE_DB_LATEST_URL,
-				String.class,
-				theMovieDbApiKey,
-				LANGUAGE);
-
 		try {
+			String mdb = restTemplate.getForObject(MOVIE_DB_LATEST_URL,
+					String.class,
+					theMovieDbApiKey,
+					LANGUAGE);
+
 			JsonNode mdbResults = mapper.readTree(mdb).get("results");
 
 			for (JsonNode movie : mdbResults) {
@@ -87,6 +105,8 @@ public class MovieDbService implements MovieResourceService {
 
 	@Override
 	public Movie getMovie(String title) {
+
+		LOGGER.debug("Retrieving movie data from Movie Db for title " + title);
 
 		try {
 
@@ -120,6 +140,8 @@ public class MovieDbService implements MovieResourceService {
 
 	private void retrieveMDReviewsAndBuild(Map<String, Movie> movies, JsonNode movie) throws JsonProcessingException, IOException {
 
+		LOGGER.debug("Retrieving movie reviews from Movie Db for title " + movie.get("original_title").asText());
+
 		try {
 			Movie m = new Movie(
 					new CompositeId(null,
@@ -128,7 +150,7 @@ public class MovieDbService implements MovieResourceService {
 					movie.get("overview").asText(),
 					0l,
 					LocalDate.parse(movie.get("release_date").asText()).getYear(),
-					null);
+					retrieveActors(movie.get("id").asText()));
 
 			movies.put(movie.get("title").asText().toLowerCase(), m);
 
@@ -160,7 +182,7 @@ public class MovieDbService implements MovieResourceService {
 	 */
 	public List<String> retrieveActors(String movieId) {
 
-		LOGGER.info("Retrieving actor data for movie with id " + movieId);
+		LOGGER.debug("Retrieving actor data from Movie Db. Movie id : " + movieId);
 
 		ArrayList<String> al = new ArrayList<String>();
 
@@ -178,7 +200,6 @@ public class MovieDbService implements MovieResourceService {
 
 		} catch (IOException e) {
 			LOGGER.error("Error while trying to retrive cast from Movie Db");
-			throw new RuntimeException(e);
 		}
 
 		return al;

@@ -18,6 +18,12 @@ import org.springframework.web.context.WebApplicationContext;
 import com.workable.movierama.api.dto.Movie;
 import com.workable.movierama.base.AbstractMovieRamaTest;
 
+/**
+ * Testing appropriate behavior of {@code EhCacheController}.
+ * 
+ * @author niko.strongioglou
+ *
+ */
 public class EhCacheControllerTests extends AbstractMovieRamaTest {
 
 	@Autowired

@@ -20,6 +20,13 @@ import com.workable.movierama.api.dto.Movie;
 import com.workable.movierama.exceptions.TitleValidationException;
 import com.workable.movierama.service.MovieRamaService;
 
+/**
+ * Controller containing the basic API calls for MovieRama. List operation are
+ * allocated to two request mappings : search which handles single title queries
+ * and latest which produces a list of movies being played in theaters.
+ * 
+ * @author niko.strongioglou
+ */
 @RestController
 @CrossOrigin(origins = "http://localhost")
 @RequestMapping(value = "/movies")
@@ -38,12 +45,6 @@ public class MovieRamaController {
 
 		validate(title);
 
-		if (StringUtils.isNotBlank(title)) {
-			LOGGER.info("Received request for title " + title);
-		} else {
-			throw new TitleValidationException();
-		}
-
 		Movie m = adminService.search(title.toLowerCase());
 		return Arrays.asList(m);
 	}
@@ -51,10 +52,18 @@ public class MovieRamaController {
 	@RequestMapping(value = "/latest", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public Iterable<Movie> latest() throws Exception {
 
+		LOGGER.debug("Received request for latest movies in theaters");
+
 		return adminService.latest();
 	}
 
 	private void validate(String title) throws TitleValidationException {
+
+		if (StringUtils.isNotBlank(title)) {
+			LOGGER.debug("Received request for title " + title);
+		} else {
+			throw new TitleValidationException();
+		}
 
 		char[] ca = title.toCharArray();
 

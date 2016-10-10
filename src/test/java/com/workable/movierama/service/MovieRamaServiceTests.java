@@ -21,6 +21,13 @@ import com.workable.movierama.api.dto.CompositeId;
 import com.workable.movierama.api.dto.Movie;
 import com.workable.movierama.base.AbstractMovieRamaTest;
 
+/**
+ * Tests verifying the correct behavior of MovieRama's main management service
+ * implementation: {@code MovieRamaServiceImpl}
+ * 
+ * @author niko.strongioglou
+ *
+ */
 public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 
 	@MockBean
@@ -44,12 +51,12 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 	}
 
 	/**
-	 * Test which combines data from both APIs to produce a getMovie response.
+	 * Test which combines data from both APIs to produce a search() response.
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void testListMovieNormal() throws Exception {
+	public void testSearchMovieNormal() throws Exception {
 
 		// -- Mock RT Response
 		Movie rtMovieStub = new Movie(new CompositeId(123l
@@ -99,7 +106,7 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void testListMovieEmptyMDbResponse() throws Exception {
+	public void testSearchMovieEmptyMDbResponse() throws Exception {
 
 		// -- Mock RT Response
 		Movie rtMovieStub = new Movie(new CompositeId(123l
@@ -139,7 +146,7 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void testListMovieEmptyRTResponse() throws Exception {
+	public void testSearchMovieEmptyRTResponse() throws Exception {
 
 		// -- Mock RT Response
 
@@ -153,7 +160,7 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 				"this is obviously a larger description",
 				1l,
 				1972,
-				null);
+				Arrays.asList(ACTORS));
 
 		Mockito.stub(mockMovieDbService.getMovie(Mockito.eq("the godfather")))
 				.toReturn(mdbMovieStub);
@@ -180,7 +187,7 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void testListMovieNotFound() throws Exception {
+	public void testSearchMovieNotFound() throws Exception {
 
 		// -- Mock RT Response
 		Mockito.stub(mockRottenTomatoesService.getMovie(Mockito.eq("the godfather")))
@@ -267,18 +274,6 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 					"Ethan Hawke", "Vincent D'Onofrio",
 					"Lee Byung-hun"));
 		}
-
-	}
-
-	// TODO Is there any use in implementing these two test cases? I mean, there
-	// is no chance of an API return empty results when queried for the latest
-	// movies.
-	@Test
-	public void testListLatestEmptyMDbResponse() throws Exception {
-	}
-
-	@Test
-	public void testListLatestEmptyRTResponse() throws Exception {
 
 	}
 

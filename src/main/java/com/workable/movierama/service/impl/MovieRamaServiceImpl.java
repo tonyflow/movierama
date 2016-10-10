@@ -22,14 +22,13 @@ import com.workable.movierama.api.MovieDbService;
 import com.workable.movierama.api.RottenTomatoesService;
 import com.workable.movierama.api.dto.Movie;
 import com.workable.movierama.service.MovieRamaService;
-import com.workable.movierama.web.MovieRamaController;
 
 @Component
 public class MovieRamaServiceImpl implements MovieRamaService {
 
 	private static final String NOW_PLAYING = "now playing";
 
-	Logger LOGGER = LoggerFactory.getLogger(MovieRamaController.class);
+	Logger LOGGER = LoggerFactory.getLogger(MovieRamaServiceImpl.class);
 
 	@Autowired
 	private RottenTomatoesService rottenTomatoesService;
@@ -73,17 +72,10 @@ public class MovieRamaServiceImpl implements MovieRamaService {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Movie> latest() {
 
 		if (moviesCache.get(NOW_PLAYING) != null) {
-			Iterable<String> titles = (Iterable<String>) moviesCache.get(NOW_PLAYING).get();
-			ArrayList<Movie> latest = new ArrayList<Movie>();
-			for (String t : titles) {
-				Movie m = (Movie) moviesCache.get(t).get();
-				latest.add(m);
-			}
-			return latest;
+			return retrieveCachedMovies();
 		} else {
 			Map<String, Movie> movies = new HashMap<>();
 			Map<String, Movie> rtLatest = rottenTomatoesService.listLatestMovies();
@@ -106,15 +98,9 @@ public class MovieRamaServiceImpl implements MovieRamaService {
 
 		if (CollectionUtils.isEmpty(rtLatest)) {
 
-			// retrieve actors and return mdbLatest
-			mdbLatest.forEach((title, movie) -> {
-				List<String> actors = movieDbService.retrieveActors(movie.getCompositeId().getMovieDbId().toString());
-				movie.setActors(actors);
-			});
-
 			return mdbLatest;
 
-		} else if (mdbLatest.isEmpty()) {
+		} else if (CollectionUtils.isEmpty(mdbLatest)) {
 
 			return rtLatest;
 
@@ -131,16 +117,16 @@ public class MovieRamaServiceImpl implements MovieRamaService {
 						rtLatest.get(title).setDescription(mdbDescription);
 					}
 
-					rtLatest.get(title)
-							.addReviews(mdbLatest.get(title).getNumberOfReviews());
+					if (rtLatest.get(title).getNumberOfReviews() != null) {
+						rtLatest.get(title)
+								.addReviews(mdbLatest.get(title).getNumberOfReviews());
+					} else {
+						rtLatest.get(title).setNumberOfReviews(mdbLatest.get(title).getNumberOfReviews());
+					}
 
 					// update composite id
 					rtLatest.get(title).getCompositeId().setMovieDbId(movie.getCompositeId().getMovieDbId());
 				} else {
-
-					List<String> actors = movieDbService.retrieveActors(movie.getCompositeId().getMovieDbId().toString());
-
-					movie.setActors(actors);
 
 					rtLatest.put(title, movie);
 
@@ -150,6 +136,20 @@ public class MovieRamaServiceImpl implements MovieRamaService {
 		}
 
 		return rtLatest;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Movie> retrieveCachedMovies() {
+
+		LOGGER.debug("Retrieving latst movies from cache");
+
+		Iterable<String> titles = (Iterable<String>) moviesCache.get(NOW_PLAYING).get();
+		ArrayList<Movie> latest = new ArrayList<Movie>();
+		for (String t : titles) {
+			Movie m = (Movie) moviesCache.get(t).get();
+			latest.add(m);
+		}
+		return latest;
 	}
 
 }

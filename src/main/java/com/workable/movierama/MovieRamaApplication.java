@@ -26,6 +26,14 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Entry point of our application. {@code EhCacheManagerFactoryBean}'s,
+ * {@code RestTemplate}'s and {@code CacheManager}'s bean configuration reside
+ * in that class.
+ * 
+ * @author niko.strongioglou
+ *
+ */
 @SpringBootApplication
 @EnableCaching
 @ComponentScan(basePackages = { "com.workable.movierama" })

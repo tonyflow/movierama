@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,8 @@ import com.workable.movierama.api.MovieResourceService;
 @Component
 public class MovieResourceFactory {
 
+	Logger LOGGER = LoggerFactory.getLogger(MovieResourceFactory.class);
+
 	@Autowired
 	private Map<String, MovieResourceService> availableMovieResources;
 
@@ -33,6 +37,10 @@ public class MovieResourceFactory {
 
 	@PostConstruct
 	private void init() {
+
+		LOGGER.debug("Initializing MovieResourceFactory... \n"
+				+ "Found " + resources.size() + " configured movie resources\n"
+				+ "and there are " + availableMovieResources.keySet().size() + " available movie resources.");
 
 		for (String available : availableMovieResources.keySet()) {
 			for (String configured : resources) {

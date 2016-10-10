@@ -48,8 +48,13 @@ public class MovieRamaControllerTests extends AbstractMovieRamaTest {
 		mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).build();
 	}
 
+	/**
+	 * Search for movie happy path.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
-	public void testNormal() throws Exception {
+	public void testSearchNormal() throws Exception {
 
 		Mockito.stub(mockMovieRamaAdminService.search(Mockito.eq("the godfather")))
 				.toReturn(new Movie(null,
@@ -76,6 +81,12 @@ public class MovieRamaControllerTests extends AbstractMovieRamaTest {
 
 	}
 
+	/**
+	 * APIs did not produce a response. Movie was not found. An empty list will
+	 * be returned.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testEmptyList() throws Exception {
 
@@ -92,6 +103,11 @@ public class MovieRamaControllerTests extends AbstractMovieRamaTest {
 
 	}
 
+	/**
+	 * Unrecoverable exception flow.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testException() throws Exception {
 
@@ -109,6 +125,11 @@ public class MovieRamaControllerTests extends AbstractMovieRamaTest {
 
 	}
 
+	/**
+	 * Invalid title request.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testValidationError() throws Exception {
 
@@ -124,6 +145,13 @@ public class MovieRamaControllerTests extends AbstractMovieRamaTest {
 
 	}
 
+	/**
+	 * Testing happy path on get latest movies API. Exceptional cases during the
+	 * control flow initiated by such a request will be handled by the inner
+	 * services. (e.g {@code RottenTomatoesService}).
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testGetLatest() throws Exception {
 

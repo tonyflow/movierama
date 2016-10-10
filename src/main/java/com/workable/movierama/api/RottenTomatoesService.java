@@ -1,9 +1,5 @@
 package com.workable.movierama.api;
 
-import static com.workable.movierama.api.UrlConstants.ROTTEN_TOMATOES_LATEST_URL;
-import static com.workable.movierama.api.UrlConstants.ROTTEN_TOMATOES_REVIEWS_URL;
-import static com.workable.movierama.api.UrlConstants.ROTTEN_TOMATOES_SEARCH_URL;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,8 +21,12 @@ import com.workable.movierama.api.dto.CompositeId;
 import com.workable.movierama.api.dto.Movie;
 
 /**
- * Implements all MovieResourceService interface's method for extracting movie
- * data via the Rotten tomatoes API
+ * Implements all {@code MovieResourceService} interface's methods for
+ * extracting movie data via the Rotten tomatoes API. listLatestMovies, getMovie
+ * and retrieveMDReviewsAndBuild methods are all fault tolerant to any
+ * unexpected exceptions produced by the Rotten Tomatoes API (e.g. server
+ * unavailability). The data retrieval flow trusts that at least one of the
+ * configured data sources or the cache will produce results.
  * 
  * @author niko.strongioglou
  *
@@ -49,6 +49,18 @@ public class RottenTomatoesService implements MovieResourceService {
 
 	private final String NOW_PLAYING_PAGING = "10";
 
+	public static String ROTTEN_TOMATOES_SEARCH_URL = "http://api.rottentomatoes.com/api/public/v1.0/movies.json?"
+			+ "apikey={api_key}&"
+			+ "q={title}&"
+			+ "page_limit={page}";
+
+	public static String ROTTEN_TOMATOES_LATEST_URL = "http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?"
+			+ "apikey={api_key}&"
+			+ "page_limit={page}";
+
+	public static String ROTTEN_TOMATOES_REVIEWS_URL = "http://api.rottentomatoes.com/api/public/v1.0/movies/{movie_id}/reviews.json?"
+			+ "apikey={api_key}";
+
 	@Override
 	public String getResourceName() {
 		return "Rotten Tomatoes";
@@ -57,16 +69,17 @@ public class RottenTomatoesService implements MovieResourceService {
 	@Override
 	public Map<String, Movie> listLatestMovies() {
 
+		LOGGER.info("Retrieving latest movies from Rotten Tomatoes");
+
 		Map<String, Movie> movies = new HashMap<String, Movie>();
 
-		String rtm = restTemplate.getForObject(ROTTEN_TOMATOES_LATEST_URL,
-				String.class,
-				rottenTomatoesApiKey,
-				NOW_PLAYING_PAGING);
-
-		JsonNode rmtResults;
 		try {
-			rmtResults = mapper.readTree(rtm).get("movies");
+			String rtm = restTemplate.getForObject(ROTTEN_TOMATOES_LATEST_URL,
+					String.class,
+					rottenTomatoesApiKey,
+					NOW_PLAYING_PAGING);
+
+			JsonNode rmtResults = mapper.readTree(rtm).get("movies");
 
 			for (JsonNode movie : rmtResults) {
 
@@ -84,6 +97,8 @@ public class RottenTomatoesService implements MovieResourceService {
 
 	@Override
 	public Movie getMovie(String title) {
+
+		LOGGER.debug("Retrieving movie data from Rotten Tomatoes for title " + title);
 
 		try {
 
@@ -123,6 +138,8 @@ public class RottenTomatoesService implements MovieResourceService {
 	 */
 	private void retrieveRTReviewsAndBuild(Map<String, Movie> movies, JsonNode movie) {
 
+		LOGGER.debug("Retrieving movie reviews from Rotten Tomatoes for title " + movie.get("title").asText());
+
 		try {
 			Movie m = new Movie(
 					new CompositeId(movie.get("id").asLong(),
@@ -146,7 +163,7 @@ public class RottenTomatoesService implements MovieResourceService {
 
 		} catch (Exception e) {
 			LOGGER.error("Error while retrieving reviews from Rotten Tomatoes for movie " + movie.get("id")
-					+ " will continue with the rest of movies", e);
+					+ " .Control flow will continue with the rest of movies", e);
 		}
 	}
 
@@ -158,6 +175,8 @@ public class RottenTomatoesService implements MovieResourceService {
 	 * @return
 	 */
 	private List<String> retrieveActors(JsonNode actors) {
+
+		LOGGER.debug("Retrieving actor data from Rotten Tomatoes Search API's response");
 
 		ArrayList<String> al = new ArrayList<String>();
 

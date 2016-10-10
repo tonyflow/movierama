@@ -3,6 +3,7 @@ package com.workable.movierama.api;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +21,7 @@ import com.workable.movierama.base.AbstractMovieRamaTest;
 /**
  * Both tests in this class contain happy paths for Movie Db service. Exception
  * cases for {@code MovieResourceService} can be found in
- * {@code RottenTomatoesService}.
+ * {@code RottenTomatoesServiceTests}.
  * 
  * @author niko.strongioglou
  *
@@ -43,6 +44,11 @@ public class MovieDbServiceTests extends AbstractMovieRamaTest {
 		mockServer = MockRestServiceServer.createServer(restTemplate);
 	}
 
+	/**
+	 * Testing happy path.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testGetMovieNormal() throws Exception {
 
@@ -58,9 +64,17 @@ public class MovieDbServiceTests extends AbstractMovieRamaTest {
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess(mdbSearchResponse, MediaType.APPLICATION_JSON_UTF8));
 
-		String mdbReviewsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-reviews.json"));
+		// -- Mock Credits ----------
+		String mdbCreditsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-credits.json"));
+
+		mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/movie/238/credits?"
+				+ "api_key=" + theMovieDbApiKey))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess(mdbCreditsResponse, MediaType.APPLICATION_JSON_UTF8));
 
 		// --- Mock Reviews ----------
+		String mdbReviewsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-reviews.json"));
+
 		mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/movie/238/reviews?"
 				+ "api_key=" + theMovieDbApiKey + "&"
 				+ "language=en-US"))
@@ -80,9 +94,18 @@ public class MovieDbServiceTests extends AbstractMovieRamaTest {
 				+ " campaign of bloody revenge.", m.getDescription());
 		Assert.assertEquals(Long.valueOf(1), m.getNumberOfReviews());
 		Assert.assertEquals(1972, m.getProductionYear());
-		Assert.assertNull(m.getActors());
+		for (String actor : m.getActors()) {
+			Assert.assertThat(actor, Matchers.isOneOf("Marlon Brando", "Al Pacino",
+					"James Caan", "Richard S. Castellano",
+					"Robert Duvall"));
+		}
 	}
 
+	/**
+	 * Testing happy path.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testListLatestNormal() throws Exception {
 
@@ -97,6 +120,17 @@ public class MovieDbServiceTests extends AbstractMovieRamaTest {
 				.andRespond(MockRestResponseCreators.withSuccess(mdbNowPlayingResponse, MediaType.APPLICATION_JSON_UTF8));
 
 		String mdbReviewsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-reviews.json"));
+
+		// -- Mock Cast For Each Movie
+		String mdbCreditsResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/movie-db-credits.json"));
+
+		for (String movieId : MDB_MOVIES) {
+			mockServer.expect(MockRestRequestMatchers.requestTo("https://api.themoviedb.org/3/movie/" + movieId + "/credits?"
+					+ "api_key=" + theMovieDbApiKey))
+					.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+					.andRespond(MockRestResponseCreators.withSuccess(mdbCreditsResponse, MediaType.APPLICATION_JSON_UTF8));
+
+		}
 
 		// --Mock Review For Each Movie
 		for (String movieId : MDB_MOVIES) {
@@ -120,7 +154,12 @@ public class MovieDbServiceTests extends AbstractMovieRamaTest {
 		Assert.assertEquals(Long.valueOf(1), magnificent.getNumberOfReviews());
 		Assert.assertEquals(2016, magnificent.getProductionYear());
 
-		Assert.assertNull(magnificent.getActors());
-
+		// the cast is't actually magnificent seven but kind of an overkill to
+		// use different cast responses for testing purposes
+		for (String actor : magnificent.getActors()) {
+			Assert.assertThat(actor, Matchers.isOneOf("Marlon Brando", "Al Pacino",
+					"James Caan", "Richard S. Castellano",
+					"Robert Duvall"));
+		}
 	}
 }
