@@ -47,6 +47,8 @@ public class RottenTomatoesService implements MovieResourceService {
 
 	private final String SEARCH_PAGING = "1";
 
+	private final String NOW_PLAYING_PAGING = "10";
+
 	@Override
 	public String getResourceName() {
 		return "Rotten Tomatoes";
@@ -60,7 +62,7 @@ public class RottenTomatoesService implements MovieResourceService {
 		String rtm = restTemplate.getForObject(ROTTEN_TOMATOES_LATEST_URL,
 				String.class,
 				rottenTomatoesApiKey,
-				String.valueOf(20)); // uses different paging from movie db
+				NOW_PLAYING_PAGING);
 
 		JsonNode rmtResults;
 		try {
@@ -72,7 +74,8 @@ public class RottenTomatoesService implements MovieResourceService {
 
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error while");
+			LOGGER.error("Error while building Rotten Tomatoes response"
+					+ "for the latest movies in theaters", e);
 		}
 
 		return movies;
@@ -82,15 +85,15 @@ public class RottenTomatoesService implements MovieResourceService {
 	@Override
 	public Movie getMovie(String title) {
 
-		Map<String, Movie> movies = new HashMap<String, Movie>();
-
-		String rtm = restTemplate.getForObject(ROTTEN_TOMATOES_SEARCH_URL,
-				String.class,
-				rottenTomatoesApiKey,
-				title,
-				String.valueOf(SEARCH_PAGING));
-
 		try {
+
+			Map<String, Movie> movies = new HashMap<String, Movie>();
+
+			String rtm = restTemplate.getForObject(ROTTEN_TOMATOES_SEARCH_URL,
+					String.class,
+					rottenTomatoesApiKey,
+					title,
+					String.valueOf(SEARCH_PAGING));
 
 			JsonNode rtmResults = mapper.readTree(rtm).get("movies");
 
@@ -103,7 +106,7 @@ public class RottenTomatoesService implements MovieResourceService {
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("Error while building Rotten tomatoes response for movie " + title, e);
+			LOGGER.error("Error while building Rotten Tomatoes response for movie " + title, e);
 		}
 
 		return null;
@@ -118,26 +121,33 @@ public class RottenTomatoesService implements MovieResourceService {
 	 * @throws IOException
 	 * @throws JsonProcessingException
 	 */
-	private void retrieveRTReviewsAndBuild(Map<String, Movie> movies, JsonNode movie) throws Exception {
-		String rtmReviews = restTemplate.getForObject(ROTTEN_TOMATOES_REVIEWS_URL,
-				String.class,
-				movie.get("id").asText(),
-				rottenTomatoesApiKey);
+	private void retrieveRTReviewsAndBuild(Map<String, Movie> movies, JsonNode movie) {
 
-		Long rottenReviews = mapper.readTree(rtmReviews).get("total").asLong();
+		try {
+			Movie m = new Movie(
+					new CompositeId(movie.get("id").asLong(),
+							null),
+					movie.get("title").asText(),
+					movie.get("synopsis").asText(),
+					0l,
+					LocalDate.parse(movie.get("release_dates").get("theater").asText()).getYear(),
+					retrieveActors(movie.get("abridged_cast")));
 
-		Movie m = new Movie(
-				new CompositeId(movie.get("id").asLong(), // rotten
-															// tomatoes
-															// id
-						null), // movie db
-								// id
-				movie.get("title").asText(),
-				movie.get("synopsis").asText(),
-				rottenReviews, // numberOfReviews
-				LocalDate.parse(movie.get("release_dates").get("theater").asText()).getYear(),
-				retrieveActors(movie.get("abridged_cast")));
-		movies.put(movie.get("title").asText().toLowerCase(), m);
+			movies.put(movie.get("title").asText().toLowerCase(), m);
+
+			String rtmReviews = restTemplate.getForObject(ROTTEN_TOMATOES_REVIEWS_URL,
+					String.class,
+					movie.get("id").asText(),
+					rottenTomatoesApiKey);
+
+			Long rottenReviews = mapper.readTree(rtmReviews).get("total").asLong();
+
+			movies.get(movie.get("title").asText().toLowerCase()).addReviews(rottenReviews);
+
+		} catch (Exception e) {
+			LOGGER.error("Error while retrieving reviews from Rotten Tomatoes for movie " + movie.get("id")
+					+ " will continue with the rest of movies", e);
+		}
 	}
 
 	/**

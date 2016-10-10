@@ -13,14 +13,26 @@
     <body>
     	
     	<div class="row">
-            <div class="col-md-11 col-md-offset-1">
+            <div class="col-md-8 col-md-offset-1">
                 <h1>MovieRama</h1>
 
                 <div ng-controller="listMovies">
-                    
-                    <input type="text" ng-model="movie_title" required
-                        placeholder="enter full movie name">
-                    <input type="button" ng-click="doFetch()" value="Submit"  />
+
+                    <div class="row">
+                        <div class="col-md-5">
+                            <p>Search for a movie</p>
+                                <input type="text" ng-model="movie_title" required
+                                    placeholder="enter full movie name">
+                                <input type="button" ng-click="doFetchMovie()" value="Submit"  />
+                        </div>
+                        <div class="col-md-3">
+                            <p>Or get the  </p>
+                            <input type="button" ng-click="doFetchLatest()" value="Latest"  />
+                        </div>
+
+                    </div>
+
+                    <br>
                     
                     <p ng-model="test_string"></p>
 

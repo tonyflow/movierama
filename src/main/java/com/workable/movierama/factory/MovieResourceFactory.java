@@ -12,6 +12,14 @@ import org.springframework.stereotype.Component;
 
 import com.workable.movierama.api.MovieResourceService;
 
+/**
+ * Factory will make a comparison between available {@code MovieResourceService}
+ * implementations and configured ones, select common ones and produce a map
+ * which {@code MovieRamaService} can use to merge the result of all APIs.
+ * 
+ * @author niko.strongioglou
+ *
+ */
 @Component
 public class MovieResourceFactory {
 

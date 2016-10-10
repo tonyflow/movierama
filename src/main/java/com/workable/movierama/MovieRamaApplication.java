@@ -54,6 +54,7 @@ public class MovieRamaApplication extends SpringServletContainerInitializer {
 
 		EhCacheManagerFactoryBean ecmfb = new EhCacheManagerFactoryBean();
 		ecmfb.setConfigLocation(new ClassPathResource("ehcache.xml"));
+		ecmfb.setShared(true);
 		return ecmfb;
 	}
 

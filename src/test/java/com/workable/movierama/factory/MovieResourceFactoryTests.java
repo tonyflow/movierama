@@ -24,11 +24,9 @@ public class MovieResourceFactoryTests extends AbstractMovieRamaTest {
 	public void testFactoryInitialization() throws Exception {
 
 		MovieResourceService rtTesourceService = movieResourceFactory.getResourceService("rottenTomatoes");
-
 		Assert.assertTrue(rtTesourceService instanceof RottenTomatoesService);
 
 		MovieResourceService mdResourceService = movieResourceFactory.getResourceService("movieDb");
-
 		Assert.assertTrue(mdResourceService instanceof MovieDbService);
 
 	}

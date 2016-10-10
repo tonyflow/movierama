@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.workable.movierama.api.dto.Movie;
@@ -79,11 +80,54 @@ public class RottenTomatoesServiceTests extends AbstractMovieRamaTest {
 	@Test
 	public void testGetMovieException() throws Exception {
 
+		// ROTTEN TOMATOES
+		// --- Mock Search ----------
+
+		mockServer.expect(MockRestRequestMatchers.requestTo("http://api.rottentomatoes.com/api/public/v1.0/movies.json?"
+				+ "apikey=" + rottenTomatoesApiKey + "&"
+				+ "q=the%20godfather&"
+				+ "page_limit=1"))
+				.andRespond(MockRestResponseCreators.withBadRequest());
+
+		// -- Actual Service Invocation
+		Movie m = rottenTomatoesService.getMovie("the godfather");
+
+		Assert.assertNull(m);
+
 	}
 
 	@Test
 	public void testGetMovieReviewsException() throws Exception {
 
+		// ROTTEN TOMATOES
+		// --- Mock Search ----------
+		String rtmSearchResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/rotten-tomatoes-search.json"));
+
+		mockServer.expect(MockRestRequestMatchers.requestTo("http://api.rottentomatoes.com/api/public/v1.0/movies.json?"
+				+ "apikey=" + rottenTomatoesApiKey + "&"
+				+ "q=the%20godfather&"
+				+ "page_limit=1"))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess(rtmSearchResponse, MediaType.APPLICATION_JSON_UTF8));
+
+		// --- Mock Reviews ----------
+		mockServer.expect(MockRestRequestMatchers.requestTo("http://api.rottentomatoes.com/api/public/v1.0/movies/12911/reviews.json?"
+				+ "apikey=" + rottenTomatoesApiKey))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withBadRequest());
+
+		// -- Actual Service Invocation
+		Movie m = rottenTomatoesService.getMovie("the godfather");
+
+		// -- Assertions
+		Assert.assertEquals("The Godfather", m.getTitle());
+		Assert.assertEquals("", m.getDescription());
+		Assert.assertEquals(Long.valueOf(0), m.getNumberOfReviews());
+		Assert.assertEquals(1972, m.getProductionYear());
+
+		for (String actor : m.getActors()) {
+			Assert.assertThat(actor, Matchers.isOneOf(ACTORS));
+		}
 	}
 
 	@Test
@@ -94,7 +138,7 @@ public class RottenTomatoesServiceTests extends AbstractMovieRamaTest {
 		String rtmNowPlayingResponse = IOUtils.toString(this.getClass().getResourceAsStream("/mock-responses/rotten-tomatoes-now-playing.json"));
 		mockServer.expect(MockRestRequestMatchers.requestTo("http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?"
 				+ "apikey=" + rottenTomatoesApiKey + "&"
-				+ "page_limit=20"))
+				+ "page_limit=10"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess(rtmNowPlayingResponse, MediaType.APPLICATION_JSON_UTF8));
 
@@ -141,8 +185,25 @@ public class RottenTomatoesServiceTests extends AbstractMovieRamaTest {
 		}
 	}
 
-	@Test
+	/**
+	 * If not response from either of the two APIs is produced then the flow is
+	 * not going to continue.
+	 * 
+	 * @throws Exception
+	 */
+	@Test(expected = HttpClientErrorException.class)
 	public void testLatestException() throws Exception {
+
+		// ROTTEN TOMATOES mocks
+		// -- Mock Now Playing -----------
+		mockServer.expect(MockRestRequestMatchers.requestTo("http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?"
+				+ "apikey=" + rottenTomatoesApiKey + "&"
+				+ "page_limit=10"))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withBadRequest());
+
+		// -- Actual Service Invocation
+		rottenTomatoesService.listLatestMovies();
 
 	}
 

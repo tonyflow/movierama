@@ -1,15 +1,19 @@
 package com.workable.movierama.service.impl;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -23,6 +27,8 @@ import com.workable.movierama.web.MovieRamaController;
 @Component
 public class MovieRamaServiceImpl implements MovieRamaService {
 
+	private static final String NOW_PLAYING = "now playing";
+
 	Logger LOGGER = LoggerFactory.getLogger(MovieRamaController.class);
 
 	@Autowired
@@ -31,32 +37,18 @@ public class MovieRamaServiceImpl implements MovieRamaService {
 	@Autowired
 	private MovieDbService movieDbService;
 
+	@Autowired
+	private CacheManager cacheManager;
+
+	private Cache moviesCache;
+
+	@PostConstruct
+	private void init() {
+		moviesCache = cacheManager.getCache("moviesCache");
+	}
+
 	@Cacheable(value = "moviesCache", sync = true)
-	public List<Movie> list(String title) {
-
-		if (StringUtils.isBlank(title)) {
-			return getLatest();
-		} else {
-			return getMovie(title);
-		}
-
-	}
-
-	private List<Movie> getLatest() {
-
-		Map<String, Movie> movies = new HashMap<>();
-
-		Map<String, Movie> rtLatest = rottenTomatoesService.listLatestMovies();
-
-		Map<String, Movie> mdbLatest = movieDbService.listLatestMovies();
-
-		movies = merge(rtLatest, mdbLatest);
-
-		return movies.values().stream().collect(Collectors.toList());
-
-	}
-
-	private List<Movie> getMovie(String title) {
+	public Movie search(String title) {
 
 		Movie rtMovieResponse = rottenTomatoesService.getMovie(title);
 		Movie mdbMovieResponse = movieDbService.getMovie(title);
@@ -74,10 +66,39 @@ public class MovieRamaServiceImpl implements MovieRamaService {
 		} else if (mdbMovieResponse != null) {
 			mdbMap.put(title.toLowerCase(), mdbMovieResponse);
 		} else {
-			return Collections.<Movie> emptyList();
+			return null;
 		}
 
-		return merge(rtMap, mdbMap).values().stream().collect(Collectors.toList());
+		return merge(rtMap, mdbMap).get(title);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Movie> latest() {
+
+		if (moviesCache.get(NOW_PLAYING) != null) {
+			Iterable<String> titles = (Iterable<String>) moviesCache.get(NOW_PLAYING).get();
+			ArrayList<Movie> latest = new ArrayList<Movie>();
+			for (String t : titles) {
+				Movie m = (Movie) moviesCache.get(t).get();
+				latest.add(m);
+			}
+			return latest;
+		} else {
+			Map<String, Movie> movies = new HashMap<>();
+			Map<String, Movie> rtLatest = rottenTomatoesService.listLatestMovies();
+			Map<String, Movie> mdbLatest = movieDbService.listLatestMovies();
+
+			movies = merge(rtLatest, mdbLatest);
+
+			movies.forEach((t, m) -> {
+				moviesCache.put(t, m);
+			});
+
+			moviesCache.put(NOW_PLAYING, new ArrayList<String>(movies.keySet()));
+
+			return movies.values().stream().collect(Collectors.toList());
+		}
 
 	}
 
@@ -113,6 +134,8 @@ public class MovieRamaServiceImpl implements MovieRamaService {
 					rtLatest.get(title)
 							.addReviews(mdbLatest.get(title).getNumberOfReviews());
 
+					// update composite id
+					rtLatest.get(title).getCompositeId().setMovieDbId(movie.getCompositeId().getMovieDbId());
 				} else {
 
 					List<String> actors = movieDbService.retrieveActors(movie.getCompositeId().getMovieDbId().toString());

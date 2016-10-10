@@ -83,7 +83,7 @@ public abstract class EhCacheUtils {
 												" hitCount=" + element.getHitCount() +
 												", creationTime=" + Instant.ofEpochMilli(element.getCreationTime()) +
 												", lastAccessTime=" + Instant.ofEpochMilli(element.getLastAccessTime()) +
-												", value=" + getObjectValue(element.getObjectValue()));
+												", value=" + getObjectValue(element.getObjectValue()) + "\n");
 							} else {
 								out.println("null");
 							}

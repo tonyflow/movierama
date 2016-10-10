@@ -17,6 +17,14 @@ import org.springframework.web.client.RestTemplate;
 import com.workable.movierama.api.dto.Movie;
 import com.workable.movierama.base.AbstractMovieRamaTest;
 
+/**
+ * Both tests in this class contain happy paths for Movie Db service. Exception
+ * cases for {@code MovieResourceService} can be found in
+ * {@code RottenTomatoesService}.
+ * 
+ * @author niko.strongioglou
+ *
+ */
 public class MovieDbServiceTests extends AbstractMovieRamaTest {
 
 	@Autowired

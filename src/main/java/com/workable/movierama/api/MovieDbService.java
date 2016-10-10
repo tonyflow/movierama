@@ -48,6 +48,8 @@ public class MovieDbService implements MovieResourceService {
 
 	private final Integer MDB_PAGING = 1;
 
+	private final int MAX_CAST = 5;
+
 	private final String LANGUAGE = "en-US";
 
 	@Override
@@ -76,7 +78,8 @@ public class MovieDbService implements MovieResourceService {
 			}
 
 		} catch (Exception e) {
-
+			LOGGER.error("Error while building Movie Db response"
+					+ "for the latest movies in theaters", e);
 		}
 
 		return movies;
@@ -85,16 +88,17 @@ public class MovieDbService implements MovieResourceService {
 	@Override
 	public Movie getMovie(String title) {
 
-		Map<String, Movie> movies = new HashMap<String, Movie>();
-
-		String mdb = restTemplate.getForObject(MOVIE_DB_SEARCH_URL,
-				String.class,
-				String.valueOf(MDB_PAGING),
-				title,
-				LANGUAGE,
-				theMovieDbApiKey);
-
 		try {
+
+			Map<String, Movie> movies = new HashMap<String, Movie>();
+
+			String mdb = restTemplate.getForObject(MOVIE_DB_SEARCH_URL,
+					String.class,
+					String.valueOf(MDB_PAGING),
+					title,
+					LANGUAGE,
+					theMovieDbApiKey);
+
 			JsonNode mdbResults = mapper.readTree(mdb).get("results");
 
 			for (JsonNode movie : mdbResults) {
@@ -108,7 +112,7 @@ public class MovieDbService implements MovieResourceService {
 
 			}
 		} catch (Exception e) {
-
+			LOGGER.error("Error while building Movie Db response for movie " + title, e);
 		}
 
 		return null;
@@ -116,23 +120,33 @@ public class MovieDbService implements MovieResourceService {
 
 	private void retrieveMDReviewsAndBuild(Map<String, Movie> movies, JsonNode movie) throws JsonProcessingException, IOException {
 
-		String mdbReviews = restTemplate.getForObject(MOVIE_DB_REVIEWS_URL,
-				String.class,
-				movie.get("id").asText(),
-				theMovieDbApiKey,
-				LANGUAGE);
+		try {
+			Movie m = new Movie(
+					new CompositeId(null,
+							movie.get("id").asLong()),
+					movie.get("original_title").asText(),
+					movie.get("overview").asText(),
+					0l,
+					LocalDate.parse(movie.get("release_date").asText()).getYear(),
+					null);
 
-		Long dbReviews = mapper.readTree(mdbReviews).get("total_results").asLong();
+			movies.put(movie.get("title").asText().toLowerCase(), m);
 
-		Movie m = new Movie(
-				new CompositeId(null,
-						movie.get("id").asLong()),
-				movie.get("original_title").asText(),
-				movie.get("overview").asText(),
-				dbReviews,
-				LocalDate.parse(movie.get("release_date").asText()).getYear(),
-				null);
-		movies.put(movie.get("title").asText().toLowerCase(), m);
+			String mdbReviews = restTemplate.getForObject(MOVIE_DB_REVIEWS_URL,
+					String.class,
+					movie.get("id").asText(),
+					theMovieDbApiKey,
+					LANGUAGE);
+
+			Long dbReviews = mapper.readTree(mdbReviews).get("total_results").asLong();
+
+			movies.get(movie.get("title").asText().toLowerCase()).addReviews(dbReviews);
+
+		} catch (Exception e) {
+			LOGGER.error("Error while retrieving reviews from Movie Db for movie " + movie.get("id")
+					+ " will continue with the rest of movies", e);
+		}
+
 	}
 
 	/**
@@ -150,20 +164,21 @@ public class MovieDbService implements MovieResourceService {
 
 		ArrayList<String> al = new ArrayList<String>();
 
-		String mdbActorsResults = restTemplate.getForObject(MOVIE_DB_CREDITS_URL, String.class,
-				movieId,
-				theMovieDbApiKey);
-
 		try {
+
+			String mdbActorsResults = restTemplate.getForObject(MOVIE_DB_CREDITS_URL, String.class,
+					movieId,
+					theMovieDbApiKey);
+
 			JsonNode actors = mapper.readTree(mdbActorsResults).get("cast");
-			int max = actors.size() < 5 ? actors.size() : 5;
+			int max = actors.size() < MAX_CAST ? actors.size() : 5;
 			for (int i = 0; i < max; i++) {
 				al.add(actors.get(i).get("name").asText());
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error("Error while trying to retrive cast from Movie Db");
+			throw new RuntimeException(e);
 		}
 
 		return al;

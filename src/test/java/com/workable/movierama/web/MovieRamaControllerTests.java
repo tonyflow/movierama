@@ -4,7 +4,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -52,17 +51,17 @@ public class MovieRamaControllerTests extends AbstractMovieRamaTest {
 	@Test
 	public void testNormal() throws Exception {
 
-		Mockito.stub(mockMovieRamaAdminService.list(Mockito.eq("the godfather")))
-				.toReturn(Arrays.asList(new Movie(null,
+		Mockito.stub(mockMovieRamaAdminService.search(Mockito.eq("the godfather")))
+				.toReturn(new Movie(null,
 						"the godfather",
 						"the coolest movie",
 						123l,
 						1972,
 						Arrays.asList("Marlon Brando",
 								"Al Pacino"))
-						));
+				);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/movies/list")
+		mockMvc.perform(MockMvcRequestBuilders.get("/movies/search")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.param("title", "the godfather"))
 				.andDo(MockMvcResultHandlers.print())
@@ -80,31 +79,32 @@ public class MovieRamaControllerTests extends AbstractMovieRamaTest {
 	@Test
 	public void testEmptyList() throws Exception {
 
-		Mockito.stub(mockMovieRamaAdminService.list(Mockito.eq("no movie to show")))
-				.toReturn(Collections.<Movie> emptyList());
+		Mockito.stub(mockMovieRamaAdminService.search(Mockito.eq("no movie to show")))
+				.toReturn(null);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/movies/list")
+		mockMvc.perform(MockMvcRequestBuilders.get("/movies/search")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.param("title", "no movie to show"))
 				.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(0)));
+				.andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)))
+				.andExpect(MockMvcResultMatchers.jsonPath("$[0]", Matchers.nullValue()));
 
 	}
 
 	@Test
 	public void testException() throws Exception {
 
-		Mockito.stub(mockMovieRamaAdminService.list(Mockito.eq("bad movie")))
+		Mockito.stub(mockMovieRamaAdminService.search(Mockito.eq("bad movie")))
 				.toThrow(new RuntimeException("Something bad happened here"));
 
-		MvcResult httpResponse = mockMvc.perform(MockMvcRequestBuilders.get("/movies/list")
+		MvcResult httpResponse = mockMvc.perform(MockMvcRequestBuilders.get("/movies/search")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.param("title", "bad movie"))
 				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 
-		Assert.assertEquals("Something unexpected happended. Probalby due to parsing of movie resource APIs or actual contact with the APIs", httpResponse
+		Assert.assertEquals("Something bad happened here", httpResponse
 				.getResponse().getContentAsString());
 
 	}
@@ -112,15 +112,40 @@ public class MovieRamaControllerTests extends AbstractMovieRamaTest {
 	@Test
 	public void testValidationError() throws Exception {
 
-		MvcResult httpResponse = mockMvc.perform(MockMvcRequestBuilders.get("/movies/list")
+		MvcResult httpResponse = mockMvc.perform(MockMvcRequestBuilders.get("/movies/search")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.param("title", "the godfather^"))
 				.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.status().isBadRequest())
 				.andReturn();
 
-		Assert.assertEquals("Movie title cannot contain the following special characters.", httpResponse
+		Assert.assertEquals("Title contains <>?{}|\\@#$%^&*-_+ or is blank", httpResponse
 				.getResponse().getContentAsString());
 
+	}
+
+	@Test
+	public void testGetLatest() throws Exception {
+
+		Mockito.stub(mockMovieRamaAdminService.latest())
+				.toReturn(Arrays.asList(new Movie(null,
+						"the godfather",
+						"the coolest movie",
+						123l,
+						1972,
+						Arrays.asList("Marlon Brando",
+								"Al Pacino")))
+				);
+
+		mockMvc.perform(MockMvcRequestBuilders.get("/movies/latest"))
+				.andDo(MockMvcResultHandlers.print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$", Matchers.hasSize(1)))
+				.andExpect(jsonPath("$[0].title", Matchers.equalTo("the godfather")))
+				.andExpect(jsonPath("$[0].description", Matchers.equalTo("the coolest movie")))
+				.andExpect(jsonPath("$[0].numberOfReviews", Matchers.equalTo(123)))
+				.andExpect(jsonPath("$[0].productionYear", Matchers.equalTo(1972)))
+				.andExpect(jsonPath("$[0].actors[0]", Matchers.equalTo("Marlon Brando")))
+				.andExpect(jsonPath("$[0].actors[1]", Matchers.equalTo("Al Pacino")));
 	}
 }

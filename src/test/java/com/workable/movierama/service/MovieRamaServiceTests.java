@@ -13,9 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.client.MockRestServiceServer;
 
 import com.workable.movierama.api.MovieDbService;
 import com.workable.movierama.api.RottenTomatoesService;
@@ -24,9 +22,6 @@ import com.workable.movierama.api.dto.Movie;
 import com.workable.movierama.base.AbstractMovieRamaTest;
 
 public class MovieRamaServiceTests extends AbstractMovieRamaTest {
-	//
-	// @Autowired
-	// private RestTemplate restTemplate;
 
 	@MockBean
 	private RottenTomatoesService mockRottenTomatoesService;
@@ -38,16 +33,6 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 	@InjectMocks
 	private MovieRamaService adminService;
 
-	@Value("${application.the-movie-db-api-key}")
-	private String theMovieDbApiKey;
-
-	@Value("${application.rotter-tomatoes-api-key}")
-	private String rottenTomatoesApiKey;
-
-	private MockRestServiceServer mockServer;
-
-	private final String[] MDB_MOVIES = new String[] { "333484" };
-
 	private final String[] ACTORS = new String[] { "Marlon Brando", "Al Pacino",
 			"James Caan", "Richard S. Castellano",
 			"Robert Duvall" };
@@ -55,10 +40,7 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 	@Before
 	public void setup() throws Exception {
 		super.setup();
-
 		MockitoAnnotations.initMocks(getClass());
-
-		// mockServer = MockRestServiceServer.createServer(restTemplate);
 	}
 
 	/**
@@ -69,7 +51,7 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 	@Test
 	public void testListMovieNormal() throws Exception {
 
-		// --Mock RT Response
+		// -- Mock RT Response
 		Movie rtMovieStub = new Movie(new CompositeId(123l
 				, null),
 				"The Godfather",
@@ -83,7 +65,7 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 		Mockito.stub(mockRottenTomatoesService.getMovie(Mockito.eq("the godfather")))
 				.toReturn(rtMovieStub);
 
-		// --Mock MDb Response
+		// -- Mock MDb Response
 		Movie mdbMovieStub = new Movie(new CompositeId(null
 				, 345l),
 				"The Godfather",
@@ -95,17 +77,15 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 		Mockito.stub(mockMovieDbService.getMovie(Mockito.eq("the godfather")))
 				.toReturn(mdbMovieStub);
 
-		List<Movie> result = adminService.list("the godfather");
+		Movie result = adminService.search("the godfather");
 
-		System.out.println(testMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
-
-		Assert.assertEquals("The Godfather", result.get(0).getTitle());
+		Assert.assertEquals("The Godfather", result.getTitle());
 		Assert.assertEquals("this is obviously a larger description",
-				result.get(0).getDescription());
-		Assert.assertEquals(1972, result.get(0).getProductionYear());
-		Assert.assertEquals(Long.valueOf(21), result.get(0).getNumberOfReviews());
+				result.getDescription());
+		Assert.assertEquals(1972, result.getProductionYear());
+		Assert.assertEquals(Long.valueOf(21), result.getNumberOfReviews());
 
-		for (String actor : result.get(0).getActors()) {
+		for (String actor : result.getActors()) {
 			Assert.assertThat(actor, Matchers.isOneOf(ACTORS));
 		}
 
@@ -121,7 +101,7 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 	@Test
 	public void testListMovieEmptyMDbResponse() throws Exception {
 
-		// --Mock RT Response
+		// -- Mock RT Response
 		Movie rtMovieStub = new Movie(new CompositeId(123l
 				, null),
 				"The Godfather",
@@ -135,18 +115,19 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 		Mockito.stub(mockRottenTomatoesService.getMovie(Mockito.eq("the godfather")))
 				.toReturn(rtMovieStub);
 
+		// -- Mock MDb Response
 		Mockito.stub(mockMovieDbService.getMovie(Mockito.eq("the godfather")))
 				.toReturn(null);
 
-		List<Movie> result = adminService.list("the godfather");
+		Movie result = adminService.search("the godfather");
 
-		Assert.assertEquals("The Godfather", result.get(0).getTitle());
+		Assert.assertEquals("The Godfather", result.getTitle());
 		Assert.assertEquals("this is a very small description",
-				result.get(0).getDescription());
-		Assert.assertEquals(1972, result.get(0).getProductionYear());
-		Assert.assertEquals(Long.valueOf(20), result.get(0).getNumberOfReviews());
+				result.getDescription());
+		Assert.assertEquals(1972, result.getProductionYear());
+		Assert.assertEquals(Long.valueOf(20), result.getNumberOfReviews());
 
-		for (String actor : result.get(0).getActors()) {
+		for (String actor : result.getActors()) {
 			Assert.assertThat(actor, Matchers.isOneOf(ACTORS));
 		}
 
@@ -160,12 +141,12 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 	@Test
 	public void testListMovieEmptyRTResponse() throws Exception {
 
-		// --Mock RT Response
+		// -- Mock RT Response
 
 		Mockito.stub(mockRottenTomatoesService.getMovie(Mockito.eq("the godfather")))
 				.toReturn(null);
 
-		// --Mock MDb Response
+		// -- Mock MDb Response
 		Movie mdbMovieStub = new Movie(new CompositeId(null
 				, 345l),
 				"The Godfather",
@@ -177,15 +158,15 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 		Mockito.stub(mockMovieDbService.getMovie(Mockito.eq("the godfather")))
 				.toReturn(mdbMovieStub);
 
-		List<Movie> result = adminService.list("the godfather");
+		Movie result = adminService.search("the godfather");
 
-		Assert.assertEquals("The Godfather", result.get(0).getTitle());
+		Assert.assertEquals("The Godfather", result.getTitle());
 		Assert.assertEquals("this is obviously a larger description",
-				result.get(0).getDescription());
-		Assert.assertEquals(1972, result.get(0).getProductionYear());
-		Assert.assertEquals(Long.valueOf(1), result.get(0).getNumberOfReviews());
+				result.getDescription());
+		Assert.assertEquals(1972, result.getProductionYear());
+		Assert.assertEquals(Long.valueOf(1), result.getNumberOfReviews());
 
-		for (String actor : result.get(0).getActors()) {
+		for (String actor : result.getActors()) {
 			Assert.assertThat(actor, Matchers.isOneOf(ACTORS));
 		}
 
@@ -193,7 +174,7 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 
 	/**
 	 * Returning an empty list when movie was not found on neither Movie Db nor
-	 * Rotten Tomatoes. Remember that algorithm uses exact string matching and
+	 * Rotten Tomatoes. Remember that algorithm uses EXACT string matching and
 	 * not approximate.
 	 * 
 	 * @throws Exception
@@ -201,17 +182,17 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 	@Test
 	public void testListMovieNotFound() throws Exception {
 
-		// --Mock RT Response
+		// -- Mock RT Response
 		Mockito.stub(mockRottenTomatoesService.getMovie(Mockito.eq("the godfather")))
 				.toReturn(null);
 
-		// --Mock MDb Response
+		// -- Mock MDb Response
 		Mockito.stub(mockMovieDbService.getMovie(Mockito.eq("the godfather")))
 				.toReturn(null);
 
-		List<Movie> result = adminService.list("the godfather");
+		Movie result = adminService.search("the godfather");
 
-		Assert.assertTrue(result.isEmpty());
+		Assert.assertNull(result);
 
 	}
 
@@ -262,9 +243,7 @@ public class MovieRamaServiceTests extends AbstractMovieRamaTest {
 		Mockito.stub(mockMovieDbService.listLatestMovies())
 				.toReturn(mdbLatestStub);
 
-		List<Movie> result = adminService.list("");
-
-		System.out.println(testMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
+		List<Movie> result = adminService.latest();
 
 		Assert.assertEquals("Miss Peregrine's Home for Peculiar Children", result.get(0).getTitle());
 		Assert.assertEquals("miss pelegrine description", result.get(0).getDescription());
