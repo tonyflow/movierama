@@ -22,6 +22,6 @@ Copy the files to your local Apache directory and you are ready to go. Using the
 
 The following is a class diagram of the application depicting mainly the services' architecture.
 
-![alt text](https://bytebucket.org/niko_strongioglou/movierama/raw/b29edf9eeb6c561bdd776d2d906a5ea317008bcb/movierama-class-diagram.png?token=f43932d1b87f6931c9e5276c94b7c3e90375aeec)
+![alt text](https://bytebucket.org/niko_strongioglou/movierama/raw/aa7e3756adbc1da145c348e7f87522098b59ee7f/movierama-class-diagram.png?token=35d06b1717e7470ef7457f8ac36b838bebe7c0c2)
 
 
