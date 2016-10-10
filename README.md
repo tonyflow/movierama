@@ -16,7 +16,7 @@ The merge algorithm which hitherto selects the longest of descriptions and sums 
 
 **productionYear**: `RottenTomatoesService` is initially assigned the task of populating that field. If there was no result then the task will be delegated to the `MovieDbService`
 
-**Actors**: The MovieDb API is not used for querying cast due to rate limitations on its use (Movie search API does not include cast in its response and must query cast for EACH movie included in the response list). Rotten tomatoes is used instead and actors list is populated from SEARCH and NOW_PLAYING *abridged cast* property.
+**actors**: The MovieDb API is not used for querying cast due to rate limitations on its use (Movie search API does not include cast in its response and must query cast for EACH movie included in the response list). Rotten tomatoes is used instead and actors list is populated from SEARCH and NOW_PLAYING *abridged cast* property.
 
 The application caches its queries to an EhCache implementation for a week. You can check ehCache configuration under `ehcache.xml`.There is a `EhCacheController` where you can inspect the elements of the cache being updated every time a query is submitted to the application. There is also a `ehcache/clear` `POST` request which can be performed in order for the cache to evict all its elements. This utility was developed for testing purposes mainly.
 
