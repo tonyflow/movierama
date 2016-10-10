@@ -33,7 +33,7 @@ public class MovieRamaController {
 	private final String ILLEGAL_CHARS = "<>?{}|\\@#$%^&*-_+";
 
 	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public Iterable<Movie> list(
+	public Iterable<Movie> search(
 			@RequestParam(value = "title", required = true) String title) throws TitleValidationException {
 
 		validate(title);
