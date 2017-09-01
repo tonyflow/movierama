@@ -5,3 +5,5 @@
 .DS_Store
 /target/
 movierama-class-diagram.ucls
+*.iml
+.idea/
