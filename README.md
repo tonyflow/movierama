@@ -1,16 +1,15 @@
 #### MovieRama
 
 The backend implementation of MovieRama is a Spring Boot application which uses Maven for managing its build lifecycle. `mvn clean install`  
-will provide you with a `war` package which you can deploy on a local Tomcat or you can run the application from your IDE of your choice. 
-Personally, I tested MovieRama through Eclipse's embedded Tomcat.
+will provide you with a `war` package which you can deploy on a local Tomcat or you can run the application from your IDE of choice.
 
-So far the merging algorithm of `MovieRamaServiceImpl` handles only two movie API resources. This can be easily extended by using the `MovieResourceFactory` which can make resource specification and handling configurable (application.yml configuration), making it possible for our application to consume a multitude of API resources.
+So far the merging algorithm of `MovieRamaServiceImpl` handles only two movie API resources. This can be easily extended by using the `MovieResourceFactory` which can make resource specification and handling configurable (application.yml configuration), making it possible for the application to consume a multitude of API resources.
 
-The merge algorithm which hitherto selects the longest of descriptions and sums the number of reviews returned by our API resources can run recursively to accommodate this future extension. The algorithm populates the required fields in the following order and manner : 
+The merge algorithm which hitherto selects the longest of descriptions and sums the number of reviews returned by our API resources can run recursively to accommodate this future extension. The algorithm populates the required fields in the following order and fashion: 
 
 **title**: `RottenTomatoesService` is initially assigned the task of populating that field. If there was no result then the task will be delegated to the `MovieDbService`
 
-**description**: The longest of the two retrieved descriptions will be displayed in our frontend.
+**description**: The longest of the two retrieved descriptions will be displayed in the frontend.
 
 **numberOfReviews**: The accumulative number of reviews retrieved from both APIs  
 
@@ -23,11 +22,11 @@ The application caches its queries to an EhCache implementation for a week (*tim
 Application's log level has been set to INFO. Nevertheless, it is configurable through the `application.yml` property `logging.level.root`.
 
 As far as the frontend is concerned, you may find the required files under `/front` folder in the root of the repository.
-Copy the files to your local Apache directory and you are ready to go. Using the frontend , the user must specify the exact name of the movie one wants to search or press the _Latest_ button and retrieve all latest movies in theaters. There is no approximate string matching (fuzzy search) results for MovieRama. There is not "loading" results indication so please give it a few seconds until the results are present.
+Copy the files to your local Apache directory and you are ready to go. Using the frontend , the user must specify the exact name of the movie one wants to search or press the _Latest_ button and retrieve all latest movies in theaters. There is no approximate string matching (fuzzy search) results for MovieRama. There is no "loading" results indication so please give it a few seconds until the results are present.
 
 
 The following is a class diagram of the application depicting mainly the services' architecture.
 
-![alt text](https://bytebucket.org/niko_strongioglou/movierama/raw/aa7e3756adbc1da145c348e7f87522098b59ee7f/movierama-class-diagram.png?token=35d06b1717e7470ef7457f8ac36b838bebe7c0c2)
+![alt text](https://github.com/tonyflow/movierama/blob/master/movierama-class-diagram.png)
 
 
